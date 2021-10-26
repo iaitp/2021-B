@@ -21,4 +21,5 @@ dependencies:
   - zlib=1.2.11=h1de35cc_3
   - jupyter
   - jupyter_nbextensions_configurator
+  - jupyter_contrib_nbextensions
 prefix: /usr/local/anaconda3/envs/2021-B
