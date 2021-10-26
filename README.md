@@ -1,3 +1,3 @@
-# Tuningfork
+# Data HarPy
 
-Create a Jupiter extension that can auto tune a model to help save traing efforts
+Jupyter extension that analyses your data and shows you less computational expensive models (greener) to pick for your task
