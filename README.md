@@ -2,20 +2,41 @@
 
 Jupyter extension that analyses your data and shows you less computational expensive models (greener) to pick for your task
 
+##Tooling
+- Jupyter 6.* with extensions: this is basically our frontend
+- Conda: Python environment mgr
+- Invoke: Python build tool
 
-## Setup
+
+## Development Environment Setup
+We're using a conda environment for the development of this extension. This makes it ease for all devs to have the same setup.
+
 **Create Conda Environment**
-
-We should all be able to reproduce the same python and notebook environment using a conda environment.
-
 - install conda (miniconda is probably enough)
-- to create the environment for this project run the following in the project dir `conda env create -f environment.yml`
+- in the project dir run `conda env create -f environment.yml`
 
-**Update the environment**
-1. Edit the environment.yml file to add a new package
-2. update your conda environment by running `conda env update -n 2021-B --file environment.yml  --prune`
-3. If someone else has added a new package we can just step 2 locally and have the same environment
+**Activate Conda Environment**
+- `conda activate 2021-B`
+*Make sure you also use this env in your IDE*
 
-**To run Jupyter notebook**
-- Jupyter is alreay installed in the conda environment
-- to start it simply activate the environment and run `conda activate 2021-B`
+**Change and/or Update Conda Environment**
+1. Add any new package you need to the environment.yml file
+2. Update the conda environment by running `conda env update -n 2021-B --file environment.yml  --prune`
+
+*It's a good idea to this everytime after you pulled as somebody might have changed the environment*
+
+##Run the extension
+**Once off**
+- Run in the environment `invoke install-nbextensions`
+
+##Run Jupyter
+Jupyter is already part of the environment. To start it run 
+- `conda activate 2021-B`
+- `jupyter notebook`
+
+--------------------
+##Invoke
+*We can add any build tasks to the tasks.py file to make things simple for others to run*
+ - Documentation: https://docs.pyinvoke.org/en/stable/index.html
+ - Show available tasks run in the environment: `invoke --list`
+
