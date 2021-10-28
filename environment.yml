@@ -20,10 +20,13 @@ dependencies:
   - wheel=0.37.0=pyhd3eb1b0_1
   - xz=5.2.5=h1de35cc_0
   - zlib=1.2.11=h1de35cc_3
+#  Python libraries 
+  - pandas
+  - numpy
 #  Jupyter Notbook and Extensions
   - jupyter
   - jupyter_nbextensions_configurator
   - jupyter_contrib_nbextensions
-#Build
+#  Build
   - invoke
 prefix: /usr/local/anaconda3/envs/2021-B
