@@ -1,8 +1,8 @@
-# Data HarPy
+# Data HarPy CDT Team project
 
-Jupyter extension that analyses your data and shows you less computational expensive models (greener) to pick for your task
+A Jupyter extension that analyses your data and shows you less computational expensive models to pick for your task. See [link](dataharpy/README.md)
 
-##Tooling
+## Tooling
 - Jupyter 6.* with extensions: this is basically our frontend
 - Conda: Python environment mgr
 - Invoke: Python build tool
@@ -25,18 +25,21 @@ We're using a conda environment for the development of this extension. This make
 
 *It's a good idea to this everytime after you pulled as somebody might have changed the environment*
 
-##Run the extension
-**Once off**
-- Run in the environment `invoke install-nbextensions`
+## Run the extension
+The extension needs to be installed in the jupyter_contrib_nbextensions folder. For our conda env this is `/usr/local/anaconda3/envs/2021-B/lib/python3.9/site-packages/jupyter_contrib_nbextensions/nbextensions/`
 
-##Run Jupyter
+## Run Jupyter
 Jupyter is already part of the environment. To start it run 
 - `conda activate 2021-B`
 - `jupyter notebook`
 
+## Credits
+<TODO>
+
 --------------------
-##Invoke
+## Invoke
 *We can add any build tasks to the tasks.py file to make things simple for others to run*
  - Documentation: https://docs.pyinvoke.org/en/stable/index.html
  - Show available tasks run in the environment: `invoke --list`
+ 
 

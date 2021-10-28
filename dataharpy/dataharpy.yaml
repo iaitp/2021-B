@@ -1,0 +1,8 @@
+Type: Jupyter Notebook Extension
+Compatibility: 6.x
+Name: Data HarPY
+Main: main.js
+Link: README.md
+Description: Helps you analyse the sturcture of your data so you can pick a less computationally demanding model.
+Parameters:
+  -none
