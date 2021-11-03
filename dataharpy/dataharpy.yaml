@@ -3,4 +3,4 @@ Compatibility: 6.x
 Name: Data HarPY
 Main: dataharpy.js
 Link: README.md
-Description: Helps you analyse the sturcture of your data so you can pick a less computationally demanding model.
+Description: Helps you analyse the structure of your data so you can pick a less computationally demanding model.
