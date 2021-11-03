@@ -5,7 +5,7 @@ A Jupyter extension that analyses your data and shows you less computational exp
 ## Tooling
 - Jupyter 6.* with extensions: this is basically our frontend
 - Conda: Python environment mgr
-- Invoke: Python build tool
+- Invoke: Python build tool to simplify frequently used tasks
 
 
 ## Development Environment Setup
@@ -25,8 +25,12 @@ We're using a conda environment for the development of this extension. This make
 
 *It's a good idea to this everytime after you pulled as somebody might have changed the environment*
 
-## Run the extension
-The extension needs to be installed in the jupyter_contrib_nbextensions folder. For our conda env this is `/usr/local/anaconda3/envs/2021-B/lib/python3.9/site-packages/jupyter_contrib_nbextensions/nbextensions/`
+## Install and Update the Extension
+
+_You can skip the first step if you've never installed the extension before_
+_These commands need to be run with the project's conda env active and in the root folder of the project_
+1. `inv uninstall-dataharpy`
+2. `inv install-dataharpy`
 
 ## Run Jupyter
 Jupyter is already part of the environment. To start it run 
@@ -38,8 +42,9 @@ Jupyter is already part of the environment. To start it run
 
 --------------------
 ## Invoke
-*We can add any build tasks to the tasks.py file to make things simple for others to run*
+
+_We can add any build tasks to the tasks.py file to make things simple for others to run_
  - Documentation: https://docs.pyinvoke.org/en/stable/index.html
- - Show available tasks run in the environment: `invoke --list`
+ - Show available tasks: `invoke --list` or `inv --list`
  
 
