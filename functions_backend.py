@@ -92,16 +92,18 @@ class analyser:
 
         self.datacols = datacols
 
+        self.Y = data[label_col].to_numpy()  #Array of class labels
+
+        print(self.data.head())
         if normalise:
             from sklearn.preprocessing import StandardScaler
             self.scaler = StandardScaler()
             self.data[datacols] = self.scaler.fit_transform(self.data[datacols])
-
-        self.Y = data[label_col].to_numpy()  #Array of class labels
-
-        self.X_df = data[datacols]   #Dataframe only of features
+        print(self.data.head())
+        self.X_df = self.data[datacols]   #Dataframe only of features
 
         self.X = self.X_df.to_numpy()
+        print(self.X)
 
 
         if regression:
