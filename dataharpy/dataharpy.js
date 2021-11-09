@@ -7,10 +7,16 @@ define([
         console.log('[DataHarPy] Loading extension with current notebook:', Jupyter.notebook);
 
         var show_data_harpy = function () {
-            //console.log("[DataHarPY] Show button clicked")
-            Jupyter.notebook.insert_cell_below('code').set_text("# This is our cell\nHello");
 
+            Jupyter.notebook.insert_cell_below('code').set_text("from sys import getsizeof\nfrom IPython import get_ipython\nfrom IPython.core.magics.namespace import NamespaceMagics\nimport ipywidgets as widgets\nimport pandas as pd\n_nms = NamespaceMagics()\n_Jupyter = get_ipython()\n_nms.shell = _Jupyter.kernel.shell\nvalues = _nms.who_ls()\nlocals = []\nfor v in values:\n\tif type(eval(v)).__name__ == 'DataFrame':\n\t\tlocals.append(v)\ndropdown = widgets.Dropdown(options=locals,vdescription='Number:', disabled=False)\nfrom backend_widgets import analyser\nimport numpy as np\nanalyser_btn = widgets.Button(description='Create Analyser')\ndef analyser_btn_eventhandler(obj):\n\tglobal analyse\n\tanalyse = analyser(eval(dropdown.value), 'target')\nanalyser_btn.on_click(analyser_btn_eventhandler)\nbtn1 = widgets.Button(description='Classification')\nbtn2 = widgets.Button(description='Regression')\ndef btn1_eventhandler(obj):\n\tprint('Hello from the {} button!'.format(obj.description))\ndef btn2_eventhandler(obj):\n\tprint('Hello from the {} button!'.format(obj.description))\nbtn1.on_click(btn1_eventhandler)\nbtn2.on_click(btn2_eventhandler)")
+            Jupyter.notebook.select_next()
+            Jupyter.notebook.execute_cell()
+            Jupyter.notebook.get_selected_cell().set_text("display(dropdown)\ndisplay(analyser_btn)\ndisplay(btn1)\ndisplay(btn2)")
+            Jupyter.notebook.execute_cell()
+            Jupyter.notebook.get_selected_cell().set_text("# Select a DataFrame to Compute the Data with:")
         };
+
+
 
         var data_harpy_button = {
             icon: 'fa-bar-chart', // a font-awesome icon
