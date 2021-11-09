@@ -7,8 +7,9 @@ define([
         console.log('[DataHarPy] Loading extension with current notebook:', Jupyter.notebook);
 
         var show_data_harpy = function () {
-            console.log("[DataHarPY] Show button clicked")
-            alert('Hello World!');
+            //console.log("[DataHarPY] Show button clicked")
+            Jupyter.notebook.insert_cell_below('code').set_text("# This is our cell\nHello");
+
         };
 
         var data_harpy_button = {
