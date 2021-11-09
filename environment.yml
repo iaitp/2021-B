@@ -23,6 +23,8 @@ dependencies:
 #  Python libraries
   - pandas
   - numpy
+  - scikit-learn
+  - matplotlib
 #  Jupyter Notebook and Extensions
   - jupyter
   - jupyterlab
