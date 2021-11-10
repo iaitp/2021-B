@@ -25,6 +25,7 @@ dependencies:
   - numpy
   - scikit-learn
   - matplotlib
+  - seaborn
 #  Jupyter Notebook and Extensions
   - jupyter
   - jupyterlab

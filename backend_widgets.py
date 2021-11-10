@@ -270,6 +270,43 @@ class analyser:
             else:
                 self.problem = 'classification'
 
+        self.analyse()
+
+    def analyse(self):
+
+
+
+
+
+
+
+        out1 = widgets.Output()
+        out2 = widgets.Output()
+        out3 = widgets.Output()
+        out4 = widgets.Output()
+
+        tab = widgets.Tab(children=[out1, out2, out3, out4])
+        tab.set_title(0, 'Compare Features')
+        tab.set_title(1, 'Best Features')
+        tab.set_title(2, 'Mean Separations')
+        tab.set_title(3, 'Feature Correlations')
+
+        display(tab)
+
+        with out1:
+            compare_fig = self.compare(self.datacols[0], self.datacols[1])
+            plt.show(compare_fig)
+        with out2:
+            features, best_feature_fig = self.feature_importances()
+            plt.show(best_feature_fig)
+        with out3:
+            separation_fig = self.mean_separations()
+            plt.show(separation_fig)
+        with out4:
+            corr_fig = self.feature_correlations()
+            plt.show(corr_fig)
+
+
     """Function calculates the given metric,
     ideally a numpy function, on an overall or by-class basis"""
     def dist(self, classes = True, calculation = np.mean, return_labels = True):
@@ -296,7 +333,7 @@ class analyser:
     """This function calculates the separation of the mean centres on a per-class basis
     There is a good deal of redundant code here from attempts to do some FANCY MATHS (probably failed attempt)
     Redundant code is flagged - i'm not going to document it as its not useable atm
-    
+
     kwargs:
     compare_devs: currently redundant, pending FANCY MATHS
     dataframe: specifies the form of the returned results - if True, results are given row and column labels in a dataframe
@@ -344,22 +381,25 @@ class analyser:
         #Simple seaborn heatmap - using Seaborn here as its heatmap function allows automatic annotation
         if display:
             import seaborn as sn
+            fig = plt.figure()
             sn.heatmap(dataframe, annot=True)
-            plt.show()
+            #plt.show()
 
         #Add dataframe of results as a class attribute
         self.separations = dataframe
+
+        return fig
 
 
 
     """Can't lie, I really like this function
     Plots two features against each other from a classification perspective, with histograms for each feature
     along with confidence intervals for each class
-    
+
     OR
-    
+
     A similar thing for regression (but this needs some work)
-    
+
     Args:
     Takes two feature names as argument"""
     def compare(self, x1, x2):
@@ -454,16 +494,11 @@ class analyser:
             ax_histy.set_xlabel('N instances')
             ax_histy.set_ylim(y_lim)
 
-            out1 = widgets.Output()
+            return fig
 
-            tab = widgets.Tab(children=[out1])
-            tab.set_title(0, 'Compare Features')
-            display(tab)
 
-            with out1:
-                plt.show(fig)
 
-            #plt.show()
+            ##plt.show()
 
         elif self.problem == 'regression':
             """Scatters x1 vs x2 (heatmap shows target value), x1 vs target, x2 vs target
@@ -487,7 +522,7 @@ class analyser:
 
             ax3.set_xlabel(x2)
             ax3.set_ylabel(self.target)
-            plt.show()
+            #plt.show()
 
     """
     Generates a matplotlib.ellipse confidence interval for a distribution of points
@@ -496,42 +531,42 @@ class analyser:
     interval - confidence interval, value between 0 and 1, the proportion of data within the ellipse
     c - the colour of the generated ellipse
     label - class label, allows plotting of each confidence interval separately
-    
+
     *kwargs:
     y_class - the label of the class to generate an ellipse for. If == None, generates an ellipse for all X
     """
     def plot_confidence_interval(self, X, interval, c, label, y_class = None):
-        
+
         #If a class is specified, limit data to this class
         if y_class != None:
             X = X[self.Y == y_class]
         else:
             X = X
-        
+
         #A value arising from some chi-squared maths, using a scipy function
         score = chi2.isf(1 - interval, 2)
 
         #The mean centre of the points
         centre = np.mean(X, axis=0)
-        
+
         #Generate a covariance matrix for X, then find eigenvalues and vectors
         covariance_matrix = np.cov(X, rowvar=False)
         eigenvalues, eigenvectors = np.linalg.eig(covariance_matrix)
         #Eigenvalues are the semi-major and semi-minor axes of the ellipse
         #Eigenvectors show the direction of semi-minor and semi-major axes
-        
-        
+
+
         #Sort values and vectors according to eigenvalues
         sort_inds = np.argsort(eigenvalues)[::-1]
 
         eigenvalues = eigenvalues[sort_inds]
         eigenvectors = eigenvectors[:, sort_inds]
-        
-        
+
+
         #The angle of the ellipse to the horizontal axis
         angle = np.arctan(eigenvectors[1, 0] / eigenvectors[0, 0])
         angle = np.degrees(angle)
-        
+
         #Generate the matplotlib.ellipse
         el2 = el(centre, width=2 * np.sqrt(score * eigenvalues[0]), height=2 * np.sqrt(score * eigenvalues[1]),
                  fill=False, color=c, angle=angle, label=label, alpha=0.7 + 0.3*(1-interval))
@@ -541,7 +576,7 @@ class analyser:
     """
     Use a random forest to find the most "important" features in the data
     NB: Importance here is calculated using OOB scores, see SKLearn documentation
-    
+
     Returns sorted list of feature importances
     """
     def feature_importances(self, display=True):
@@ -563,10 +598,10 @@ class analyser:
         sorted_features = np.array(self.datacols)[sort_inds[::-1]]
 
         if display:
-            self.compare(sorted_features[0], sorted_features[1])
+            fig = self.compare(sorted_features[0], sorted_features[1])
 
 
-        return sorted_features
+        return sorted_features, fig
 
     """The next few functions are very similar
     They all apply a dimensional reduction technique to the data
@@ -636,7 +671,7 @@ class analyser:
     *kwargs:
     display - uses a seaborn heatmap to show feature correlations
     """
-    def feature_correlations(self, display = False):
+    def feature_correlations(self, display = True):
 
         if self.problem == 'classification':
             self.correlations = self.X_df.corr()
@@ -645,8 +680,11 @@ class analyser:
 
         if display:
             import seaborn as sn
+            fig = plt.figure()
             sn.heatmap(self.correlations, annot=True)
-            plt.show()
+            #plt.show()
+            return fig
+
 
 
 
@@ -754,8 +792,3 @@ class analyser:
     #     self.svm = svm
     #
     #     print(svm.fit_status_)
-
-
-
-
-
