@@ -12,6 +12,8 @@ from scipy.stats import chi2
 from matplotlib.patches import Ellipse as el
 
 import ipywidgets as widgets
+import warnings
+warnings.filterwarnings('ignore')
 
 
 def rotate(X, angle):
@@ -211,6 +213,16 @@ def construct_sklearn_dataset(dataset):
 #     # return mod_r / bottom
 
 
+
+
+
+
+
+
+
+
+
+
 def distances(mu1, mu2):
     """Simple function, returns the euclidean
     distance between two given vector coordinates"""
@@ -232,7 +244,7 @@ class analyser:
 
         #This part keeps processing fast, as we limit larger sets to 1000 instances
         #This tool isn't intended to actually build ML models, only provide useful insights
-        if limit_size == True:
+        if limit_size:
             if data.shape[0] > 1000:
                 data = data.shuffle.sample(n=1000)
 
@@ -274,16 +286,24 @@ class analyser:
 
     def analyse(self):
 
+        x1_drop = widgets.Dropdown(
+            value=self.datacols[0],
+            options=self.datacols,
+            description='X1'
+        )
 
+        x2_drop = widgets.Dropdown(
+            value=self.datacols[1],
+            options=self.datacols,
+            description='X1'
+        )
 
+        out1 = widgets.VBox(children = [widgets.interactive_output(self.compare, {'x1':x1_drop, 'x2':x2_drop}),
+                                        x1_drop, x2_drop])
 
-
-
-
-        out1 = widgets.Output()
-        out2 = widgets.Output()
-        out3 = widgets.Output()
-        out4 = widgets.Output()
+        out2 = widgets.interactive_output(self.feature_importances,{})
+        out3 = widgets.interactive_output(self.mean_separations,{})
+        out4 = widgets.interactive_output(self.feature_correlations,{})
 
         tab = widgets.Tab(children=[out1, out2, out3, out4])
         tab.set_title(0, 'Compare Features')
@@ -293,18 +313,22 @@ class analyser:
 
         display(tab)
 
-        with out1:
-            compare_fig = self.compare(self.datacols[0], self.datacols[1])
-            plt.show(compare_fig)
-        with out2:
-            features, best_feature_fig = self.feature_importances()
-            plt.show(best_feature_fig)
-        with out3:
-            separation_fig = self.mean_separations()
-            plt.show(separation_fig)
-        with out4:
-            corr_fig = self.feature_correlations()
-            plt.show(corr_fig)
+        # with out2:
+        #     features, best_feature_fig = self.feature_importances()
+        #     plt.show(best_feature_fig)
+        # with out3:
+        #     separation_fig = self.mean_separations()
+        #     plt.show(separation_fig)
+        # with out4:
+        #     corr_fig = self.feature_correlations()
+        #     plt.show(corr_fig)
+
+
+    def compare_update(self, x1, x2):
+        fig = self.compare(x1, x2)
+
+        return fig
+
 
 
     """Function calculates the given metric,
@@ -392,6 +416,7 @@ class analyser:
 
 
 
+
     """Can't lie, I really like this function
     Plots two features against each other from a classification perspective, with histograms for each feature
     along with confidence intervals for each class
@@ -403,6 +428,19 @@ class analyser:
     Args:
     Takes two feature names as argument"""
     def compare(self, x1, x2):
+
+        if x1 == x2:
+            import seaborn as sn
+            fig = plt.figure()
+
+            #sn.boxplot(self.data[x1], y = self.Y)
+            #sn.swarmplot(self.data[x1], y = self.Y)
+
+            sn.violinplot(self.data[x1], y = self.Y)
+
+            return fig
+
+
 
         #Only want the data for these two columns
         data_here = self.data.copy()[[x1, x2]]
@@ -498,7 +536,7 @@ class analyser:
 
 
 
-            ##plt.show()
+            #plt.show()
 
         elif self.problem == 'regression':
             """Scatters x1 vs x2 (heatmap shows target value), x1 vs target, x2 vs target
@@ -579,14 +617,14 @@ class analyser:
 
     Returns sorted list of feature importances
     """
-    def feature_importances(self, display=True):
+    def feature_importances(self, display=True, return_features=False):
         #Import forests, and instantiate a forest according to the analyser problem
         from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 
         if self.problem == 'classification':
-            forest = RandomForestClassifier(n_estimators=250,verbose=1)
+            forest = RandomForestClassifier(n_estimators=250)#,verbose=1)
         elif self.problem == 'regression':
-            forest = RandomForestRegressor(n_estimators=250,verbose=1)
+            forest = RandomForestRegressor(n_estimators=250)#,verbose=1)
 
         #Fit a forest to the data
         forest.fit(self.X_df, self.Y)
@@ -600,8 +638,11 @@ class analyser:
         if display:
             fig = self.compare(sorted_features[0], sorted_features[1])
 
+        if return_features:
 
-        return sorted_features, fig
+            return sorted_features, fig
+        elif display:
+            return fig
 
     """The next few functions are very similar
     They all apply a dimensional reduction technique to the data
