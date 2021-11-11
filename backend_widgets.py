@@ -229,7 +229,12 @@ def distances(mu1, mu2):
     r = mu1 - mu2
     return norm(r)
 
+def to_categorical(data):
+    from sklearn.preprocessing import LabelEncoder
 
+    enc = LabelEncoder().fit_transform(data)
+
+    return enc
 
 
 
@@ -246,17 +251,18 @@ class analyser:
         #This tool isn't intended to actually build ML models, only provide useful insights
         if limit_size:
             if data.shape[0] > 1000:
-                data = data.shuffle.sample(n=1000)
+                data = data.sample(n=1000)
 
         #Define the core class attributes
         self.data = data
-
-
-
         self.column_names = data.columns.to_list()
         self.target = label_col
         datacols = self.column_names
         datacols.remove(label_col)  #This is now a list of all the non-target features
+
+        for col in datacols:
+            if np.unique(self.data[col]).shape[0] < 10:
+                self.data[col] = to_categorical(data[col])
 
         self.datacols = datacols
 
@@ -287,29 +293,46 @@ class analyser:
     def analyse(self):
 
         x1_drop = widgets.Dropdown(
-            value=self.datacols[0],
-            options=self.datacols,
-            description='X1'
+            value=self.column_names[0],
+            options=self.column_names,
+            description='x Feature'
         )
 
         x2_drop = widgets.Dropdown(
-            value=self.datacols[1],
-            options=self.datacols,
-            description='X1'
+            value=self.column_names[1],
+            options=self.column_names,
+            description='y Feature'
+        )
+
+        calculations = [('Mean', np.mean), ('Deviation', np.std), ('Max', np.max), ('Min', np.min), ('Range', np.ptp),
+                        ('Feature Mean Separations', self.mean_separations), ('Feature Correlations', self.feature_correlations)]
+        if self.problem != 'classification':
+            calculations = calculations[:-2]
+
+        dist_drop = widgets.Dropdown(
+            value=np.mean,
+            options=calculations,
+            description='Calculation'
         )
 
         out1 = widgets.VBox(children = [widgets.interactive_output(self.compare, {'x1':x1_drop, 'x2':x2_drop}),
-                                        x1_drop, x2_drop])
+                                        widgets.HBox(children = [x1_drop, x2_drop])])
 
         out2 = widgets.interactive_output(self.feature_importances,{})
-        out3 = widgets.interactive_output(self.mean_separations,{})
-        out4 = widgets.interactive_output(self.feature_correlations,{})
+        #out4 = widgets.interactive_output(self.feature_correlations,{})
+        out3 = widgets.VBox(children = [widgets.interactive_output(self.dist, {'calculation':dist_drop}), dist_drop])
 
-        tab = widgets.Tab(children=[out1, out2, out3, out4])
+        kids = [out1, out2, out3]
+
+
+
+
+        tab = widgets.Tab(children=kids)
         tab.set_title(0, 'Compare Features')
         tab.set_title(1, 'Best Features')
-        tab.set_title(2, 'Mean Separations')
-        tab.set_title(3, 'Feature Correlations')
+        tab.set_title(2, 'Calculations')
+
+
 
         display(tab)
 
@@ -333,11 +356,16 @@ class analyser:
 
     """Function calculates the given metric,
     ideally a numpy function, on an overall or by-class basis"""
-    def dist(self, classes = True, calculation = np.mean, return_labels = True):
+    def dist(self, classes = True, calculation = np.mean, return_labels = True, dataframe = True):
 
         #If the user has specified that the metric is for the whole dataset
         if classes == False:
             return calculation(self.X, axis=0)
+
+        if calculation == self.mean_separations:
+            return self.mean_separations()
+        elif calculation == self.feature_correlations:
+            return self.feature_correlations()
 
         #Get unique class labels
         class_labels = np.unique(self.Y)
@@ -347,8 +375,15 @@ class analyser:
         for label in class_labels:
             values.append(calculation(self.X[self.Y == label, :], axis=0))
 
+        if dataframe:
+            import seaborn as sn
+            df = pd.DataFrame(values, class_labels, self.datacols)
+            fig = plt.figure(figsize=(df.shape[0],df.shape[1]))
+            sn.heatmap(df, annot=True)
 
-        if return_labels == True:
+            return fig
+
+        elif return_labels == True:
             return np.array(values), class_labels
         else:
             return np.array(values)
@@ -365,7 +400,7 @@ class analyser:
     def mean_separations(self, compare_devs = False, dataframe = True, display=True):
 
         #Use the .dist method to get class means
-        class_means, class_labels = self.dist()
+        class_means, class_labels = self.dist(dataframe=False)
 
         #The only if statement that is relevant in this current iteration
         if compare_devs == False:
@@ -405,7 +440,7 @@ class analyser:
         #Simple seaborn heatmap - using Seaborn here as its heatmap function allows automatic annotation
         if display:
             import seaborn as sn
-            fig = plt.figure()
+            fig = plt.figure(figsize=(dataframe.shape[0],dataframe.shape[1]))
             sn.heatmap(dataframe, annot=True)
             #plt.show()
 
@@ -431,7 +466,7 @@ class analyser:
 
         if x1 == x2:
             import seaborn as sn
-            fig = plt.figure()
+            fig = plt.figure(figsize=(8,8))
 
             #sn.boxplot(self.data[x1], y = self.Y)
             #sn.swarmplot(self.data[x1], y = self.Y)
@@ -721,7 +756,7 @@ class analyser:
 
         if display:
             import seaborn as sn
-            fig = plt.figure()
+            fig = plt.figure(figsize=(self.correlations.shape[0],self.correlations.shape[1]))
             sn.heatmap(self.correlations, annot=True)
             #plt.show()
             return fig
