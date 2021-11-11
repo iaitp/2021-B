@@ -42,7 +42,18 @@ Once you're in a notebook, prepare a pandas dataframe.
 
 In this version feature columns can be any name, but your target feature ("Y") should be named "target".
 
-Once you have a dataframe, click the plugins button on the Jupyter toolbar, and you'll be prompted to select a dataframe to use.
+Once you have a dataframe, click the plugin's button on the Jupyter toolbar (a bar chart icon), and you'll be prompted to select a dataframe to use.
+Select a dataframe and press analyse, and dataharpy will generate some useful tabs with information about your data.
+
+Note: Data is normalised by default when .analyse(x1,x2) is called. Calculated values (e.g. per-class mean separation) are therefore calculated using the normalised data.
+
+## Output information
+
+The first tab allows you to plot features against each other, along with histograms aligned with the scatter plot. If the same feature is selected twice then the output is a per-class violin plot.
+
+The second tab uses the same `.compare(x1,x2)` method, and finds the most useful features in the context of your data, using an sklearn random forest.
+
+Other tabs display useful per-class and per-feature information.
 
 ## Credits
 <TODO>
