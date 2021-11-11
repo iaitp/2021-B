@@ -378,7 +378,7 @@ class analyser:
         if dataframe:
             import seaborn as sn
             df = pd.DataFrame(values, class_labels, self.datacols)
-            fig = plt.figure(figsize=(df.shape[0],df.shape[1]))
+            fig = plt.figure(figsize=(df.shape[1],df.shape[0]))
             sn.heatmap(df, annot=True)
 
             return fig
@@ -440,7 +440,7 @@ class analyser:
         #Simple seaborn heatmap - using Seaborn here as its heatmap function allows automatic annotation
         if display:
             import seaborn as sn
-            fig = plt.figure(figsize=(dataframe.shape[0],dataframe.shape[1]))
+            fig = plt.figure(figsize=(dataframe.shape[1],dataframe.shape[0]))
             sn.heatmap(dataframe, annot=True)
             #plt.show()
 
