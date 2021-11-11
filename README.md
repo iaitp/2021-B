@@ -45,7 +45,7 @@ In this version feature columns can be any name, but your target feature ("Y") s
 Once you have a dataframe, click the plugin's button on the Jupyter toolbar (a bar chart icon), and you'll be prompted to select a dataframe to use.
 Select a dataframe and press analyse, and dataharpy will generate some useful tabs with information about your data.
 
-Note: Data is normalised by default when .analyse(x1,x2) is called. Calculated values (e.g. per-class mean separation) are therefore calculated using the normalised data.
+Note: Data is normalised by default when `.analyse(x1,x2)` is called. Calculated values (e.g. per-class mean separation) are therefore calculated using the normalised data.
 
 ## Output information
 
