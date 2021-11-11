@@ -37,6 +37,11 @@ Jupyter is already part of the environment. To start it run
 - `conda activate 2021-B`
 - `jupyter notebook`
 
+## Using the plugin
+Once you're in a notebook, prepare a pandas dataframe.
+In this version feature columns can be any name, but your target feature ("Y") should be named "target".
+Once you have a dataframe, click the plugins button on the Jupyter toolbar, and you'll be prompted to select a dataframe to use.
+
 ## Credits
 <TODO>
 
