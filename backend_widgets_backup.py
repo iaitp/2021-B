@@ -245,6 +245,7 @@ class analyser:
     The user can also force the analyser to use all of the data provided, instead of the default 1000 sub-sample"""
     def __init__(self, data, label_col,
                  regression = False, limit_size = True, normalise = True):
+        print('analyser active') #Probably going to be removed in a later iteration
 
         self.normalise = normalise
 
@@ -295,6 +296,8 @@ class analyser:
 
     def analyse(self, other_arg = None):
 
+        print(self.datacols)
+
         x1_drop = widgets.Dropdown(
             value=self.column_names[0],
             options=self.column_names,
@@ -305,12 +308,6 @@ class analyser:
             value=self.column_names[1],
             options=self.column_names,
             description='y Feature'
-        )
-
-        color_drop = widgets.Dropdown(
-            value=self.label_col,
-            options=self.column_names + [self.label_col],
-            description='Color'
         )
 
         calculations = [('Mean', np.mean), ('Deviation', np.std), ('Max', np.max), ('Min', np.min), ('Range', np.ptp),
@@ -413,10 +410,11 @@ class analyser:
                                               widgets.HBox(children=[add_clusters, rm_clusters])])
 
 
-        compare = widgets.VBox(children = [widgets.interactive_output(self.compare, {'x1':x1_drop, 'x2':x2_drop, 'color_attrib':color_drop}),
-                                        widgets.HBox(children = [x1_drop, x2_drop, color_drop])])
 
-        importances = widgets.VBox(children=[widgets.interactive_output(self.feature_importances,{'color_attrib':color_drop}), color_drop])
+        compare = widgets.VBox(children = [widgets.interactive_output(self.compare, {'x1':x1_drop, 'x2':x2_drop}),
+                                        widgets.HBox(children = [x1_drop, x2_drop])])
+
+        importances = widgets.interactive_output(self.feature_importances,{})
         calcs = widgets.VBox(children = [widgets.interactive_output(self.dist, {'calculation':dist_drop}), dist_drop])
 
         kids = [compare, importances, calcs, functions]
@@ -462,6 +460,9 @@ class analyser:
 
         if dataframe:
             import seaborn as sn
+            print(values)
+            print(class_labels)
+            print(self.datacols)
             df = pd.DataFrame(values, class_labels, self.datacols)
             fig = plt.figure(figsize=(df.shape[1],df.shape[0]))
             sn.heatmap(df, annot=True)
@@ -547,7 +548,7 @@ class analyser:
 
     Args:
     Takes two feature names as argument"""
-    def compare(self, x1, x2, color_attrib):
+    def compare(self, x1, x2):
 
         if x1 == x2:
             import seaborn as sn
@@ -590,11 +591,8 @@ class analyser:
             ax_histy.tick_params(direction='in', labelleft=False)
 
             #Scatter each class on the axis
-            if color_attrib == self.label_col:
-                for l in np.unique(self.Y):
-                    ax_scatter.scatter(X[self.Y == l, 0], X[self.Y == l, 1], alpha=0.5, edgecolor='0')
-            else:
-                ax_scatter.scatter(X[:,0], X[:,1], c=self.data[color_attrib],  edgecolor='0')
+            for l in np.unique(self.Y):
+                ax_scatter.scatter(X[self.Y == l, 0], X[self.Y == l, 1], alpha=0.5, edgecolor='0')
 
             #Colors and intervals for the confidence intervals (inverval p containts (100*p) % of the data)
             colors = ['green', 'blue', 'orange', 'red']
@@ -740,7 +738,7 @@ class analyser:
 
     Returns sorted list of feature importances
     """
-    def feature_importances(self, color_attrib, display=True, return_features=False):
+    def feature_importances(self, display=True, return_features=False):
         #Import forests, and instantiate a forest according to the analyser problem
         from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 
@@ -759,7 +757,7 @@ class analyser:
         sorted_features = np.array(self.datacols)[sort_inds[::-1]]
 
         if display:
-            fig = self.compare(sorted_features[0], sorted_features[1], color_attrib)
+            fig = self.compare(sorted_features[0], sorted_features[1])
 
         if return_features:
 
@@ -793,6 +791,7 @@ class analyser:
             elif self.problem == 'regression':
                 self.compare_regression("PCA_0", "PCA_1")
 
+        print('added_pca')
 
     def remove_PCA(self, empty=None):
         try:
