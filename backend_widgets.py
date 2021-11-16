@@ -272,8 +272,10 @@ class analyser:
     def init_data(self):
         self.column_names = self.data.columns.to_list()
         self.target = self.label_col
-        datacols = self.column_names
+        datacols = self.column_names.copy()
         datacols.remove(self.label_col)  #This is now a list of all the non-target features
+        if "KMeans clusters" in datacols:
+            datacols.remove("KMeans clusters")
 
         for col in datacols:
             if np.unique(self.data[col]).shape[0] < 10:
@@ -297,19 +299,19 @@ class analyser:
 
         x1_drop = widgets.Dropdown(
             value=self.column_names[0],
-            options=self.column_names,
+            options=self.datacols,
             description='x Feature'
         )
 
         x2_drop = widgets.Dropdown(
             value=self.column_names[1],
-            options=self.column_names,
+            options=self.datacols,
             description='y Feature'
         )
 
         color_drop = widgets.Dropdown(
             value=self.label_col,
-            options=self.column_names + [self.label_col],
+            options=self.column_names,# + [self.label_col, "KMeans clusters"],
             description='Color'
         )
 
@@ -908,7 +910,8 @@ class analyser:
         n_outliers = clusters[clusters == -1].shape[0]
         p_outliers = f'{n_outliers/clusters.shape[0]*100}%'
 
-        print(f'HDBSCAN found {n_clusters} clusters, and {n_outliers} outliers, \n{p_outliers} of data')
+        print('KMeans clusters added to dataframe - press \"compare new\" to view')
+        #print(f'HDBSCAN found {n_clusters} clusters, and {n_outliers} outliers, \n{p_outliers} of data')
 
         self.data[f"KMeans clusters"] = clusters
         self.init_data()
