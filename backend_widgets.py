@@ -245,7 +245,7 @@ class analyser:
     The user can also force the analyser to use all of the data provided, instead of the default 1000 sub-sample"""
     def __init__(self, data, label_col,
                  regression = False, limit_size = True, normalise = True):
-        print(label_col)
+        # print(label_col)
         self.normalise = normalise
 
         #This part keeps processing fast, as we limit larger sets to 1000 instances
@@ -284,7 +284,7 @@ class analyser:
         self.datacols = datacols
 
         self.Y = self.data[self.label_col].to_numpy()  #Array of class labels
-        print(np.unique(self.Y))
+        # print(np.unique(self.Y))
 
         # #print(self.data.head())
         # if self.normalise:

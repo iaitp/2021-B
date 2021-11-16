@@ -19,7 +19,8 @@ define([
                 "\t\tlocals.append(v)\n" +
                 "data_dropdown = widgets.Dropdown(options=locals,description='Data:', disabled=False)\n" +
                 "from backend_widgets import analyser\n" +
-                "import numpy as np\nselect_data_btn = widgets.Button(description='Select Data')\n" +
+                "import numpy as np\n" +
+                "select_data_btn = widgets.Button(description='Select Data')\n" +
                 "analyser_btn = widgets.Button(description='Analyse Data')\n" +
                 "def select_data_btn_eventhandler(obj):\n" +
                 "\tglobal selected_data\n" +
