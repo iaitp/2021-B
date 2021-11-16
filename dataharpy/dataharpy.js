@@ -8,7 +8,33 @@ define([
 
         var show_data_harpy = function () {
 
-            Jupyter.notebook.insert_cell_below('code').set_text("from sys import getsizeof\nfrom IPython import get_ipython\nfrom IPython.core.magics.namespace import NamespaceMagics\nimport ipywidgets as widgets\nimport pandas as pd\n_nms = NamespaceMagics()\n_Jupyter = get_ipython()\n_nms.shell = _Jupyter.kernel.shell\nvalues = _nms.who_ls()\nlocals = []\nfor v in values:\n\tif type(eval(v)).__name__ == 'DataFrame':\n\t\tlocals.append(v)\ndata_dropdown = widgets.Dropdown(options=locals,description='Data:', disabled=False)\nfrom backend_widgets import analyser\nimport numpy as np\nselect_data_btn = widgets.Button(description='Select Data')\nanalyser_btn = widgets.Button(description='Analyse Data')\ndef select_data_btn_eventhandler(obj):\n\tglobal selected_data\n\tglobal col_dropdown\n\tselected_data = eval(data_dropdown.value)\n\tcol_dropdown = widgets.Dropdown(options=selected_data.columns,description='Target:', disabled=False)\n\tdisplay(col_dropdown)\n\tdisplay(analyser_btn)\ndef analyser_btn_eventhandler(obj):\n\tglobal analyse\n\tanalyse = analyser(selected_data, col_dropdown.value)\tanalyser_btn.on_click(analyser_btn_eventhandler)\nselect_data_btn.on_click(select_data_btn_eventhandler)\ndisplay(data_dropdown)\ndisplay(select_data_btn)")
+            Jupyter.notebook.insert_cell_below('code').set_text("from sys import getsizeof\n" +
+                "from IPython import get_ipython\n" +
+                "from IPython.core.magics.namespace import NamespaceMagics\n" +
+                "import ipywidgets as widgets\nimport pandas as pd\n" +
+                "_nms = NamespaceMagics()\n_Jupyter = get_ipython()\n" +
+                "_nms.shell = _Jupyter.kernel.shell\nvalues = _nms.who_ls()\n" +
+                "locals = []\nfor v in values:\n" +
+                "\tif type(eval(v)).__name__ == 'DataFrame':\n" +
+                "\t\tlocals.append(v)\n" +
+                "data_dropdown = widgets.Dropdown(options=locals,description='Data:', disabled=False)\n" +
+                "from backend_widgets import analyser\n" +
+                "import numpy as np\nselect_data_btn = widgets.Button(description='Select Data')\n" +
+                "analyser_btn = widgets.Button(description='Analyse Data')\n" +
+                "def select_data_btn_eventhandler(obj):\n" +
+                "\tglobal selected_data\n" +
+                "\tglobal col_dropdown\n" +
+                "\tselected_data = eval(data_dropdown.value)\n" +
+                "\tcol_dropdown = widgets.Dropdown(options=selected_data.columns,description='Target:', disabled=False)\n" +
+                "\tdisplay(col_dropdown)\n" +
+                "\tdisplay(analyser_btn)\n" +
+                "def analyser_btn_eventhandler(obj):\n" +
+                "\tglobal analyse\n" +
+                "\tanalyse = analyser(selected_data, col_dropdown.value)\n" +
+                "analyser_btn.on_click(analyser_btn_eventhandler)\n" +
+                "select_data_btn.on_click(select_data_btn_eventhandler)\n" +
+                "display(data_dropdown)\n" +
+                "display(select_data_btn)")
             Jupyter.notebook.select_next()
             Jupyter.notebook.execute_cell()
             Jupyter.notebook.get_selected_cell().set_text("# Select a DataFrame to analyse:")

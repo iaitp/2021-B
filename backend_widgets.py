@@ -245,7 +245,7 @@ class analyser:
     The user can also force the analyser to use all of the data provided, instead of the default 1000 sub-sample"""
     def __init__(self, data, label_col,
                  regression = False, limit_size = True, normalise = True):
-
+        print(label_col)
         self.normalise = normalise
 
         #This part keeps processing fast, as we limit larger sets to 1000 instances
@@ -284,27 +284,27 @@ class analyser:
         self.datacols = datacols
 
         self.Y = self.data[self.label_col].to_numpy()  #Array of class labels
+        print(np.unique(self.Y))
 
-        #print(self.data.head())
-        if self.normalise:
-            from sklearn.preprocessing import StandardScaler
-            self.scaler = StandardScaler()
-            self.data[datacols] = self.scaler.fit_transform(self.data[datacols])
+        # #print(self.data.head())
+        # if self.normalise:
+        #     from sklearn.preprocessing import StandardScaler
+        #     self.scaler = StandardScaler()
+        #     self.data[datacols] = self.scaler.fit_transform(self.data[datacols])
         #print(self.data.head())
         self.X_df = self.data[datacols]   #Dataframe only of features
 
         self.X = self.X_df.to_numpy()
 
     def analyse(self, other_arg = None):
-
         x1_drop = widgets.Dropdown(
-            value=self.column_names[0],
+            value=self.datacols[0],
             options=self.datacols,
             description='x Feature'
         )
 
         x2_drop = widgets.Dropdown(
-            value=self.column_names[1],
+            value=self.datacols[1],
             options=self.datacols,
             description='y Feature'
         )
