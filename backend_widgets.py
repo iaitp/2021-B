@@ -832,24 +832,6 @@ class analyser:
         except:
             pass
 
-    def add_UMAP(self, display = False):
-        from umap import UMAP
-
-        self.projector = UMAP(n_components=2)
-
-        PCA_transformation = self.projector.fit_transform(self.X_df)
-
-        for i in range(PCA_transformation.shape[1]):
-            self.X_df[f"UMAP_{i}"] = PCA_transformation[:,i]
-            self.data[f"UMAP_{i}"] = PCA_transformation[:,i]
-            self.datacols.append(f"UMAP_{i}")
-            self.init_data()
-
-        if display == True:
-            if self.problem == 'classification':
-                self.compare("UMAP_0", "UMAP_1")
-            elif self.problem == 'regression':
-                self.compare_regression("UMAP_0", "UMAP_1")
 
     """
     Calculates feature correlations
@@ -910,11 +892,15 @@ class analyser:
         return score
 
     def find_clusters(self, dummy = None):
-        from hdbscan import HDBSCAN
+        try:
+            from hdbscan import HDBSCAN
+        except:
+            print('Clustering failed, is HDBSCAN installed?')
 
         min_cluster = int(self.X_df.shape[0] / 20)
 
         clusters = HDBSCAN(min_cluster_size=min_cluster).fit_predict(self.X_df)
+
 
         n_clusters = np.unique(clusters).shape[0]
 
