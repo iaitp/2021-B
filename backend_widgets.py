@@ -893,14 +893,14 @@ class analyser:
             return score
 
     def find_clusters(self, dummy = None):
-        try:
-            from hdbscan import HDBSCAN
-        except:
-            print('Clustering failed, is HDBSCAN installed?')
+        #try:
+        from sklearn.cluster import KMeans
+        # except:
+        #     print('Clustering failed, is HDBSCAN installed?')
 
         min_cluster = int(self.X_df.shape[0] / 20)
 
-        clusters = HDBSCAN(min_cluster_size=min_cluster).fit_predict(self.X_df)
+        clusters = KMeans(n_clusters=np.unique(self.Y).shape[0]).fit_predict(self.X_df, self.Y)
 
 
         n_clusters = np.unique(clusters).shape[0]
@@ -910,11 +910,11 @@ class analyser:
 
         print(f'HDBSCAN found {n_clusters} clusters, and {n_outliers} outliers, \n{p_outliers} of data')
 
-        self.data[f"HDBSCAN clusters"] = clusters
+        self.data[f"KMeans clusters"] = clusters
         self.init_data()
     def remove_clusters(self, dummy=None):
         try:
-            del self.data["HDBSCAN clusters"]
+            del self.data["KMeans clusters"]
             self.init_data()
         except:
             pass
