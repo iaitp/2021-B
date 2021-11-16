@@ -1,12 +1,25 @@
 # Data HarPy CDT Team project
 
+## Group Members
+Alex Davies
+Isabella Degen
+Tony Fang
+Phillip Sloan
+
+### 1. [Introduction](#introduction)
+### 2. [Background](Background/Readme.md)
+### 3. [System Implementation](System_Implementation/README.md)
+### 4. [Evaluation](Evaluation/README.md)
+### 5. [Conclusion](Conclusion/README.md)
+
+# Introduction
+
 A Jupyter extension that analyses your data and shows you less computational expensive models to pick for your task. See [link](dataharpy/README.md)
 
 ## Tooling
 - Jupyter 6.* with extensions: this is basically our frontend
 - Conda: Python environment mgr
 - Invoke: Python build tool to simplify frequently used tasks
-
 
 ## Development Environment Setup
 We're using a conda environment for the development of this extension. This makes it ease for all devs to have the same setup.
