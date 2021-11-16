@@ -407,10 +407,11 @@ class analyser:
         dimensionality_buttons = [pca_btn, rm_pca_btn,  tsne_btn, rm_tsne_btn, reset_btn]
 
         sep_check = widgets.interactive_output(self.linear_separable,{'order':order, 'kernel':kernel})
+        cluster = widgets.interactive_output(self.find_clusters,{})
 
         functions = widgets.VBox(children = [ widgets.HBox(children = dimensionality_buttons),
                                                  widgets.HBox(children = [sep_check,widgets.VBox(children =  [order, kernel])]),
-                                              widgets.HBox(children=[add_clusters, rm_clusters])])
+                                              widgets.HBox(children=[cluster,add_clusters, rm_clusters])])
 
 
         compare = widgets.VBox(children = [widgets.interactive_output(self.compare, {'x1':x1_drop, 'x2':x2_drop, 'color_attrib':color_drop}),
