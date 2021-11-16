@@ -7,10 +7,10 @@ Tony Fang
 Phillip Sloan
 
 ### 1. [Introduction](#introduction)
-### 2. [Background](Background/README.md)
-### 3. [System Implementation](System_Implementation/README.md)
-### 4. [Evaluation](Evaluation/README.md)
-### 5. [Conclusion](Conclusion/README.md)
+### 2. [Background](Report/Background/README.md)
+### 3. [System Implementation](Report/System_Implementation/README.md)
+### 4. [Evaluation](Report/Evaluation/README.md)
+### 5. [Conclusion](Report/Conclusion/README.md)
 
 # Introduction
 
