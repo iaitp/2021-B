@@ -864,7 +864,7 @@ class analyser:
     kernel - the type of kernel to use
     order - if kernel == 'poly', this specifies the polynomial order of the kernel
     """
-    def linear_separable(self, kernel='poly', order=1):
+    def linear_separable(self, kernel='poly', order=1, report = True):
         from sklearn.svm import SVC, SVR
 
         #Instantiate an SVM specific to the problem
@@ -882,14 +882,15 @@ class analyser:
 
         p_score = "{:.2f}".format(score)
         #Feed-back to the user (this will probably change in a later version)
-        if score >= 0.99:
-            print(f'Data is perfectly separable, to an accuracy of {p_score}')
-        elif score >= 0.9:
-            print(f'Data is separable to an accuracy of {p_score}')
+        if report:
+            if score >= 0.99:
+                print(f'Data is perfectly separable, to an accuracy of {p_score}')
+            elif score >= 0.9:
+                print(f'Data is separable to an accuracy of {p_score}')
+            else:
+                print(f'Data is not separable, scoring an accuracy of {p_score}')
         else:
-            print(f'Data is not separable, scoring an accuracy of {p_score}')
-
-        return score
+            return score
 
     def find_clusters(self, dummy = None):
         try:
