@@ -245,7 +245,6 @@ class analyser:
     The user can also force the analyser to use all of the data provided, instead of the default 1000 sub-sample"""
     def __init__(self, data, label_col,
                  regression = False, limit_size = True, normalise = True):
-        # print(label_col)
         self.normalise = normalise
 
         #This part keeps processing fast, as we limit larger sets to 1000 instances
@@ -284,13 +283,12 @@ class analyser:
         self.datacols = datacols
 
         self.Y = self.data[self.label_col].to_numpy()  #Array of class labels
-        # print(np.unique(self.Y))
 
         # #print(self.data.head())
-        # if self.normalise:
-        #     from sklearn.preprocessing import StandardScaler
-        #     self.scaler = StandardScaler()
-        #     self.data[datacols] = self.scaler.fit_transform(self.data[datacols])
+        if self.normalise:
+            from sklearn.preprocessing import StandardScaler
+            self.scaler = StandardScaler()
+            self.data[datacols] = self.scaler.fit_transform(self.data[datacols])
         #print(self.data.head())
         self.X_df = self.data[datacols]   #Dataframe only of features
 
@@ -413,7 +411,7 @@ class analyser:
 
         functions = widgets.VBox(children = [ widgets.HBox(children = dimensionality_buttons),
                                                  widgets.HBox(children = [sep_check,widgets.VBox(children =  [order, kernel])]),
-                                              widgets.HBox(children=[cluster,add_clusters, rm_clusters])])
+                                              widgets.HBox(children=[add_clusters, rm_clusters])])
 
 
         compare = widgets.VBox(children = [widgets.interactive_output(self.compare, {'x1':x1_drop, 'x2':x2_drop, 'color_attrib':color_drop}),
