@@ -275,10 +275,14 @@ class analyser:
         datacols.remove(self.label_col)  #This is now a list of all the non-target features
         if "KMeans clusters" in datacols:
             datacols.remove("KMeans clusters")
-
+        self.n_categorical = 0
+        self.n_numeric     = 0
         for col in datacols:
             if np.unique(self.data[col]).shape[0] < 10:
                 self.data[col] = to_categorical(self.data[col])
+                self.n_categorical += 1
+            else:
+                self.n_numeric += 1
 
         self.datacols = datacols
 
@@ -420,7 +424,18 @@ class analyser:
         importances = widgets.VBox(children=[widgets.interactive_output(self.feature_importances,{'color_attrib':color_drop}), color_drop])
         calcs = widgets.VBox(children = [widgets.interactive_output(self.dist, {'calculation':dist_drop}), dist_drop])
 
-        kids = [compare, importances, calcs, functions]
+        rec_btn = widgets.Button(
+            description='Re-run recommendation',
+            disabled=False,
+            button_style='success',  # 'success', 'info', 'warning', 'danger' or ''
+            #tooltip='Reset the analysis process - allows comparison of dimensionality reduction features',
+            icon=''  # (FontAwesome names without the `fa-` prefix)
+        )
+        rec_btn.on_click(self.recommend)
+
+        recommendations = widgets.HBox(children = [widgets.interactive_output, {'dummy':rec_btn}])
+
+        kids = [compare, importances, calcs, functions, recommendations]
 
         tab = widgets.Tab(children=kids)
         tab.set_title(0, 'Compare Features')
@@ -429,6 +444,60 @@ class analyser:
         tab.set_title(3, 'Functions')
 
         display(tab)
+
+
+    def recommend(self, dummy = None):
+        corr = self.feature_correlations(display=False)
+        sum_corr = np.sum(corr) - corr.shape[0]
+        mean_corr = sum_corr / (corr.shape[0]**2 - corr.shape[0])
+
+        recommendation = ''
+        reasons = ''
+
+        if self.n_categorical != 0:
+            reasons += f'Your data has {self.n_categorical} categorical columns\n'
+            if self.n_numeric == 0:
+                reasons += 'Your data only has categorical columns'
+                recommendation = 'Naive Bayes'
+
+            else:
+                reasons += 'Your data has mixed numeric and categorical columns'
+                recommendation = 'Random Forest'
+        else:
+            reasons += 'Your data has no categorical columns\n'
+            if mean_corr <= 0.5:
+                reasons += f'Your data has a low mean feature correlation ({mean_corr})'
+                recommendation = 'Gaussian Mixture Model'
+            else:
+                reasons += f'Your data has a high mean feature correlation ({mean_corr})\n'
+                linseps = np.zeros(5, dtype=np.float32)
+                i_max = 222
+                for i in range(5):
+                    linseps[i] = self.linear_separable(order=i, report = False)
+                    if linseps[i] >= 0.99:
+                        i_max = i
+                        break
+                if i_max == 222:
+                    i_max = np.argmax(linseps)
+
+
+                if linseps[i_max] >= 0.99:
+                    reasons += f'Your data is linearly seperable (score {linseps[i_max]})'
+                    recommendation = f'Linear model, kernel poly order {i_max}'
+
+                elif linseps[i_max] >= 0.9:
+                    reasons += f'Your data is nearly linearly seperable (score {linseps[i_max]}), but would require soft margins'
+                    recommendation = f'SVM, kernel poly order {i_max}'
+                else:
+                    reasons += 'Your data is not linearly separable and has high feature correlations, fitting distributions is less likely to work'
+                    recommendation = 'K-Means'
+
+        print(reasons, recommendation)
+
+
+
+
+
 
 
 
@@ -852,6 +921,8 @@ class analyser:
             sn.heatmap(self.correlations, annot=True)
             #plt.show()
             return fig
+        else:
+            return self.correlations
 
 
 
