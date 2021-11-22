@@ -433,7 +433,7 @@ class analyser:
         )
         rec_btn.on_click(self.recommend)
 
-        recommendations = widgets.HBox(children = [widgets.interactive_output, {'dummy':rec_btn}])
+        recommendations = widgets.HBox(children = [widgets.interactive_output(self.recommend, {}), rec_btn])
 
         kids = [compare, importances, calcs, functions, recommendations]
 
@@ -442,57 +442,62 @@ class analyser:
         tab.set_title(1, 'Best Features')
         tab.set_title(2, 'Calculations')
         tab.set_title(3, 'Functions')
+        tab.set_title(4, 'Recommendations')
 
         display(tab)
 
 
     def recommend(self, dummy = None):
         corr = self.feature_correlations(display=False)
-        sum_corr = np.sum(corr) - corr.shape[0]
+        sum_corr = np.sum(np.abs(corr.to_numpy())) - corr.shape[0]
         mean_corr = sum_corr / (corr.shape[0]**2 - corr.shape[0])
 
-        recommendation = ''
-        reasons = ''
+        recommendation = 'Recommendation:'
+        reasons = '\nReasons:\n'
 
         if self.n_categorical != 0:
             reasons += f'Your data has {self.n_categorical} categorical columns\n'
             if self.n_numeric == 0:
                 reasons += 'Your data only has categorical columns'
-                recommendation = 'Naive Bayes'
+                recommendation += '\nNaive Bayes'
 
             else:
                 reasons += 'Your data has mixed numeric and categorical columns'
-                recommendation = 'Random Forest'
+                recommendation += '\nRandom Forest'
         else:
             reasons += 'Your data has no categorical columns\n'
-            if mean_corr <= 0.5:
-                reasons += f'Your data has a low mean feature correlation ({mean_corr})'
-                recommendation = 'Gaussian Mixture Model'
+
+            linseps = np.zeros(5, dtype=np.float32)
+            i_max = 222
+            for i in range(5):
+                linseps[i] = self.linear_separable(order=i, report=False)
+                if linseps[i] >= 0.99:
+                    i_max = i
+                    break
+            if i_max == 222:
+                i_max = np.argmax(linseps)
+
+            if linseps[i_max] >= 0.99:
+                reasons += f'Your data is linearly seperable (score {linseps[i_max]})'
+                recommendation += f'\nLinear model, kernel poly order {i_max}'
+
+            elif linseps[i_max] >= 0.9:
+                reasons += f'Your data is nearly linearly seperable (score {linseps[i_max]}), but would require soft margins'
+                recommendation += f'\nSVM, kernel poly order {i_max}'
             else:
-                reasons += f'Your data has a high mean feature correlation ({mean_corr})\n'
-                linseps = np.zeros(5, dtype=np.float32)
-                i_max = 222
-                for i in range(5):
-                    linseps[i] = self.linear_separable(order=i, report = False)
-                    if linseps[i] >= 0.99:
-                        i_max = i
-                        break
-                if i_max == 222:
-                    i_max = np.argmax(linseps)
+                reasons += 'Your data is not linearly separable and has high feature correlations, fitting distributions is less likely to work'
 
 
-                if linseps[i_max] >= 0.99:
-                    reasons += f'Your data is linearly seperable (score {linseps[i_max]})'
-                    recommendation = f'Linear model, kernel poly order {i_max}'
 
-                elif linseps[i_max] >= 0.9:
-                    reasons += f'Your data is nearly linearly seperable (score {linseps[i_max]}), but would require soft margins'
-                    recommendation = f'SVM, kernel poly order {i_max}'
+                if mean_corr <= 0.25:
+                    reasons += f'Your data has a low mean feature correlation ({mean_corr})'
+                    recommendation += '\nGaussian Mixture Model'
                 else:
-                    reasons += 'Your data is not linearly separable and has high feature correlations, fitting distributions is less likely to work'
-                    recommendation = 'K-Means'
+                    reasons += f'Your data has a high mean feature correlation ({mean_corr})\n'
+                    recommendation += '\nK-Means'
 
-        print(reasons, recommendation)
+
+        print(recommendation, '\n',reasons)
 
 
 
