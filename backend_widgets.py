@@ -635,7 +635,7 @@ class analyser:
             #sn.boxplot(self.data[x1], y = self.Y)
             #sn.swarmplot(self.data[x1], y = self.Y)
 
-            sn.violinplot(self.data[x1], y = self.Y)
+            sn.violinplot(self.data[x1], y = self.Y.astype(str))
 
             return fig
 
