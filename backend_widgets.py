@@ -275,14 +275,7 @@ class analyser:
         datacols.remove(self.label_col)  #This is now a list of all the non-target features
         if "KMeans clusters" in datacols:
             datacols.remove("KMeans clusters")
-        self.n_categorical = 0
-        self.n_numeric     = 0
-        for col in datacols:
-            if np.unique(self.data[col]).shape[0] < 10:
-                self.data[col] = to_categorical(self.data[col])
-                self.n_categorical += 1
-            else:
-                self.n_numeric += 1
+
 
         self.datacols = datacols
 
@@ -293,8 +286,19 @@ class analyser:
             from sklearn.preprocessing import StandardScaler
             self.scaler = StandardScaler()
             self.data[datacols] = self.scaler.fit_transform(self.data[datacols])
-        #print(self.data.head())
+
         self.X_df = self.data[datacols]   #Dataframe only of features
+
+        self.n_categorical = 0
+        self.n_numeric     = 0
+        for col in datacols:
+            if np.unique(self.data[col]).shape[0] < 10:
+                self.X_df[col] = to_categorical(self.data[col])
+                self.n_categorical += 1
+            else:
+                self.n_numeric += 1
+        #print(self.data.head())
+
 
         self.X = self.X_df.to_numpy()
 
@@ -321,6 +325,9 @@ class analyser:
                         ('Feature Mean Separations', self.mean_separations), ('Feature Correlations', self.feature_correlations)]
         if self.problem != 'classification':
             calculations = calculations[:-2]
+            self.use_classes = False
+        else:
+            self.use_classes = True
 
         dist_drop = widgets.Dropdown(
             value=np.mean,
@@ -478,22 +485,22 @@ class analyser:
                 i_max = np.argmax(linseps)
 
             if linseps[i_max] >= 0.99:
-                reasons += f'Your data is linearly seperable (score {linseps[i_max]})'
+                reasons += f'Your data is linearly separable (score {linseps[i_max]})'
                 recommendation += f'\nLinear model, kernel poly order {i_max}'
 
             elif linseps[i_max] >= 0.9:
-                reasons += f'Your data is nearly linearly seperable (score {linseps[i_max]}), but would require soft margins'
+                reasons += f'Your data is nearly linearly separable (score {linseps[i_max]}),\n but would require soft margins'
                 recommendation += f'\nSVM, kernel poly order {i_max}'
             else:
-                reasons += 'Your data is not linearly separable and has high feature correlations, fitting distributions is less likely to work'
+                reasons += 'Your data is not linearly separable and has high feature correlations,\n fitting distributions is less likely to work'
 
 
 
                 if mean_corr <= 0.25:
-                    reasons += f'Your data has a low mean feature correlation ({mean_corr})'
+                    reasons += f'\nYour data has a low mean feature correlation ({mean_corr})'
                     recommendation += '\nGaussian Mixture Model'
                 else:
-                    reasons += f'Your data has a high mean feature correlation ({mean_corr})\n'
+                    reasons += f'\nYour data has a high mean feature correlation ({mean_corr})\n'
                     recommendation += '\nK-Means'
 
 
@@ -516,24 +523,33 @@ class analyser:
 
     """Function calculates the given metric,
     ideally a numpy function, on an overall or by-class basis"""
-    def dist(self, classes = True, calculation = np.mean, return_labels = True, dataframe = True):
+    def dist(self, calculation = np.mean, return_labels = True, dataframe = True):
 
+        classes = self.use_classes
         #If the user has specified that the metric is for the whole dataset
         if classes == False:
-            return calculation(self.X, axis=0)
 
-        if calculation == self.mean_separations:
-            return self.mean_separations()
-        elif calculation == self.feature_correlations:
-            return self.feature_correlations()
+            class_labels = [self.label_col]
 
-        #Get unique class labels
-        class_labels = np.unique(self.Y)
+            values = [calculation(self.X, axis=0)]
 
-        #Get the given metric for each class
-        values = []
-        for label in class_labels:
-            values.append(calculation(self.X[self.Y == label, :], axis=0))
+            if calculation == self.mean_separations:
+                return self.mean_separations()
+            elif calculation == self.feature_correlations:
+                return self.feature_correlations()
+        else:
+            if calculation == self.mean_separations:
+                return self.mean_separations()
+            elif calculation == self.feature_correlations:
+                return self.feature_correlations()
+
+            #Get unique class labels
+            class_labels = np.unique(self.Y)
+
+            #Get the given metric for each class
+            values = []
+            for label in class_labels:
+                values.append(calculation(self.X[self.Y == label, :], axis=0))
 
         if dataframe:
             import seaborn as sn
@@ -562,10 +578,9 @@ class analyser:
         #Use the .dist method to get class means
         class_means, class_labels = self.dist(dataframe=False)
 
-        #The only if statement that is relevant in this current iteration
-        if compare_devs == False:
+        #Number of classes
 
-            #Number of classes
+        if self.problem == 'classification':
             n_classes = class_labels.shape[0]
 
             #Gamma is just a name, picture the hulk doing calculations. Here we store the mean separations.
@@ -575,19 +590,8 @@ class analyser:
                 for n, c2 in enumerate(class_labels):
                     if i != n:
                         gamma_array[i, n] = distances(class_means[i, :], class_means[n, :])
-
-        #REDUNDANT CODE
-        #===================================================================================================================
         else:
-            n_classes = class_labels.shape[0]
-
-            gamma_array = np.zeros((n_classes, n_classes), dtype=np.float64)
-            for i, c1 in enumerate(class_labels):
-                for n, c2 in enumerate(class_labels):
-                    if i != n:
-                        gamma_array[i, n] = gamma_factor(class_means[i,:], class_means[n,:], class_devs[i,:], class_devs[n,:])
-
-        # ===================================================================================================================
+            return 'Mean separations not returned as this is a regression problem'
 
         #Adds the results array as a class attribute if *dataframe is specified as False
         if dataframe == False:
@@ -825,7 +829,7 @@ class analyser:
             forest = RandomForestRegressor(n_estimators=250)#,verbose=1)
 
         #Fit a forest to the data
-        forest.fit(self.X_df, self.Y)
+        forest.fit(self.X, self.Y.astype(str))
         importances = forest.feature_importances_
 
         #SKLearn feature importances are by index
@@ -853,8 +857,8 @@ class analyser:
 
         #Instantiate the imported class
         self.projector = PCA(n_components=2)
-        self.projector.fit(self.X_df)
-        PCA_transformation = self.projector.transform(self.X_df)
+        self.projector.fit(self.X)
+        PCA_transformation = self.projector.transform(self.X)
 
         for i in range(PCA_transformation.shape[1]):
             self.X_df[f"PCA_{i}"] = PCA_transformation[:,i]
@@ -884,7 +888,7 @@ class analyser:
         self.projector = TSNE(n_components=2)
 
         #self.projector.fit(self.X_df)
-        PCA_transformation = self.projector.fit_transform(self.X_df)
+        PCA_transformation = self.projector.fit_transform(self.X)
 
         for i in range(PCA_transformation.shape[1]):
             self.X_df[f"TSNE_{i}"] = PCA_transformation[:,i]
@@ -952,9 +956,9 @@ class analyser:
 
         #Fit the svm and find how it performs on the data
         #If score == 1 the data is perfectly linearly separable
-        svm.fit(self.X_df, self.Y)
+        svm.fit(self.X, self.Y.astype(str))
         self.svm = svm
-        score = svm.score(self.X_df, self.Y)
+        score = svm.score(self.X, self.Y.astype(str))
 
         p_score = "{:.2f}".format(score)
         #Feed-back to the user (this will probably change in a later version)
@@ -974,7 +978,7 @@ class analyser:
         # except:
         #     print('Clustering failed, is HDBSCAN installed?')
 
-        min_cluster = int(self.X_df.shape[0] / 20)
+        min_cluster = int(self.X.shape[0] / 20)
 
         clusters = KMeans(n_clusters=np.unique(self.Y).shape[0]).fit_predict(self.X_df, self.Y)
 
