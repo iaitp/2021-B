@@ -1,36 +1,12 @@
 name: 2021-B
 channels:
-  - defaults
   - conda-forge
 dependencies:
-#  Standard
-  - ca-certificates=2021.9.30=hecd8cb5_1
-  - certifi=2021.10.8=py39hecd8cb5_0
-  - libcxx=12.0.0=h2f01273_0
-  - libffi=3.3=hb1e8313_2
-  - ncurses=6.2=h0a44026_1
-  - openssl=1.1.1l=h9ed2024_0
-  - pip=21.2.4=py39hecd8cb5_0
-  - python=3.9.7=h88f2d9e_1
-  - readline=8.1=h9ed2024_0
-  - setuptools=58.0.4=py39hecd8cb5_0
-  - sqlite=3.36.0=hce871da_0
-  - tk=8.6.11=h7bc2e8c_0
-  - tzdata=2021e=hda174b7_0
-  - wheel=0.37.0=pyhd3eb1b0_1
-  - xz=5.2.5=h1de35cc_0
-  - zlib=1.2.11=h1de35cc_3
-#  Python libraries
+  - python=3.9.7
+  - jupyter
   - pandas
   - numpy
   - scikit-learn
-  - matplotlib
   - seaborn
-#  Jupyter Notebook and Extensions
-  - jupyter
-  - jupyterlab
-  - jupyter_nbextensions_configurator
-  - jupyter_contrib_nbextensions
-#  Build
+  - matplotlib
   - invoke
-prefix: /usr/local/anaconda3/envs/2021-B
