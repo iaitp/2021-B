@@ -11,10 +11,14 @@ define([
             Jupyter.notebook.insert_cell_below('code').set_text("from sys import getsizeof\n" +
                 "from IPython import get_ipython\n" +
                 "from IPython.core.magics.namespace import NamespaceMagics\n" +
-                "import ipywidgets as widgets\nimport pandas as pd\n" +
-                "_nms = NamespaceMagics()\n_Jupyter = get_ipython()\n" +
-                "_nms.shell = _Jupyter.kernel.shell\nvalues = _nms.who_ls()\n" +
-                "locals = []\nfor v in values:\n" +
+                "import ipywidgets as widgets\n" +
+                "import pandas as pd\n" +
+                "_nms = NamespaceMagics()\n" +
+                "_Jupyter = get_ipython()\n" +
+                "_nms.shell = _Jupyter.kernel.shell\n" +
+                "values = _nms.who_ls()\n" +
+                "locals = []\n" +
+                "for v in values:\n" +
                 "\tif type(eval(v)).__name__ == 'DataFrame':\n" +
                 "\t\tlocals.append(v)\n" +
                 "data_dropdown = widgets.Dropdown(options=locals,description='Data:', disabled=False)\n" +
