@@ -281,26 +281,26 @@ class analyser:
 
         self.Y = self.data[self.label_col].to_numpy()  #Array of class labels
 
-        # #print(self.data.head())
-        if self.normalise:
-            from sklearn.preprocessing import StandardScaler
-            self.scaler = StandardScaler()
-            self.data[datacols] = self.scaler.fit_transform(self.data[datacols])
-
-        self.X_df = self.data[datacols]   #Dataframe only of features
+        self.X_df = self.data[datacols]  # Dataframe only of features
 
         self.n_categorical = 0
         self.n_numeric     = 0
         for col in datacols:
             if np.unique(self.data[col]).shape[0] < 10:
-                self.X_df[col] = to_categorical(self.data[col])
+                self.X_df[col] = to_categorical(self.X_df[col])
                 self.n_categorical += 1
             else:
                 self.n_numeric += 1
-        #print(self.data.head())
-
 
         self.X = self.X_df.to_numpy()
+
+        # #print(self.data.head())
+        if self.normalise:
+            from sklearn.preprocessing import StandardScaler
+            self.scaler = StandardScaler()
+            self.X = self.scaler.fit_transform(self.X)
+
+
 
     def analyse(self, other_arg = None):
         x1_drop = widgets.Dropdown(
@@ -322,9 +322,9 @@ class analyser:
         )
 
         calculations = [('Mean', np.mean), ('Deviation', np.std), ('Max', np.max), ('Min', np.min), ('Range', np.ptp),
-                        ('Feature Mean Separations', self.mean_separations), ('Feature Correlations', self.feature_correlations)]
+                         ('Feature Correlations', self.feature_correlations),('Feature Mean Separations', self.mean_separations)]
         if self.problem != 'classification':
-            calculations = calculations[:-2]
+            calculations = calculations[:-1]
             self.use_classes = False
         else:
             self.use_classes = True
@@ -451,6 +451,8 @@ class analyser:
         tab.set_title(3, 'Functions')
         tab.set_title(4, 'Recommendations')
 
+        self.remove_clusters()
+
         display(tab)
 
 
@@ -531,12 +533,14 @@ class analyser:
 
             class_labels = [self.label_col]
 
-            values = [calculation(self.X, axis=0)]
+
 
             if calculation == self.mean_separations:
                 return self.mean_separations()
             elif calculation == self.feature_correlations:
                 return self.feature_correlations()
+
+            values = [calculation(self.X_df[self.datacols], axis=0)]
         else:
             if calculation == self.mean_separations:
                 return self.mean_separations()
@@ -671,7 +675,7 @@ class analyser:
             #Scatter each class on the axis
             if color_attrib == self.label_col:
                 for l in np.unique(self.Y):
-                    ax_scatter.scatter(X[self.Y == l, 0], X[self.Y == l, 1], alpha=0.5, edgecolor='0')
+                    ax_scatter.scatter(X[self.Y == l, 0], X[self.Y == l, 1], alpha=1, edgecolor='0')
             else:
                 ax_scatter.scatter(X[:,0], X[:,1], c=self.data[color_attrib],  edgecolor='0')
 
@@ -750,9 +754,19 @@ class analyser:
 
             (ax1, ax2, ax3) = axes
 
-            ax1.scatter(X[:, 0], X[:, 1], alpha=0.25, edgecolor='0', c=self.Y)  # x1 vs x2, color shows target value
-            ax2.scatter(X[:, 0], self.Y, alpha=0.5, edgecolor='0')  # x1 vs target
-            ax3.scatter(X[:, 1], self.Y, alpha=0.5, edgecolor='0')  # x2 vs target
+            if np.unique(self.data[color_attrib]).shape[0] < 10:
+                color_data = self.data[color_attrib]
+                unique = np.unique(self.data[color_attrib])
+                for i, l in enumerate(unique):
+                    ax1.scatter(X[color_data == l, 0], X[color_data == l, 1], alpha=1, edgecolor='0')  # x1 vs x2, color shows target value
+                    ax2.scatter(X[color_data == l, 0], self.Y[color_data == l], alpha=1, edgecolor='0')  # x1 vs target
+                    ax3.scatter(X[color_data == l, 1], self.Y[color_data == l], alpha=1, edgecolor='0')  # x2 vs target
+            else:
+                ax1.scatter(X[:, 0], X[:, 1], alpha=1, edgecolor='0',c=self.data[color_attrib])  # x1 vs x2, color shows target value
+                ax2.scatter(X[:, 0], self.Y, alpha=1, edgecolor='0', c=self.data[color_attrib])  # x1 vs target
+                ax3.scatter(X[:, 1], self.Y, alpha=1, edgecolor='0', c=self.data[color_attrib])  # x2 vs target
+
+
 
             ax1.set_xlabel(x1)
             ax1.set_ylabel(x2)
@@ -920,7 +934,7 @@ class analyser:
     def feature_correlations(self, display = True):
 
         if self.problem == 'classification':
-            self.correlations = self.X_df.corr()
+            self.correlations = self.data.corr()
         elif self.problem == 'regression':
             self.correlations = self.data.corr()
 
