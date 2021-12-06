@@ -1,7 +1,7 @@
 define([
     'base/js/namespace'
 ], function(
-    Jupyter
+Jupyter
 ) {
     function load_ipython_extension() {
       // Checker to ensure the .js script is loading into your browser.
@@ -12,6 +12,7 @@ define([
             //insert_cell_below
             Jupyter.notebook.insert_cell_below('code').set_text("from sys import getsizeof\n" +
                 "from IPython import get_ipython\n" +
+                "from IPython.display import clear_output\n" +
                 "from IPython.core.magics.namespace import NamespaceMagics\n" +
                 "import ipywidgets as widgets\n" +
                 "import pandas as pd\n" +
@@ -53,7 +54,15 @@ define([
                 "def analyser_btn_eventhandler(obj):\n" +
                 "\tglobal analyse\n" +
                 //creates an analyse object
-                "\tanalyse = analyser(selected_data, col_dropdown.value)\n" +
+                "\ttry:\n" +
+                "\t\tanalyse = analyser(selected_data, col_dropdown.value)\n" +
+                "\texcept Exception as e:\n" +
+                "\t\tclear_output()\n" +
+                "\t\tprint('Error: Are you sure you selected a compatible DataFrame? Please reselect a suitible DataFrame:')\n" +
+                "\t\tprint()\n" +
+                "\t\tprint(e)\n" +
+                "\t\tdisplay(data_dropdown)\n" +
+                "\t\tdisplay(select_data_btn)\n" +
                 "analyser_btn.on_click(analyser_btn_eventhandler)\n" +
                 "select_data_btn.on_click(select_data_btn_eventhandler)\n" +
                 //ensuring the analyser and drop down are visible when the
