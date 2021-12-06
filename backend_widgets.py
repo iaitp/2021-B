@@ -11,7 +11,6 @@ import pandas as pd
 from scipy.stats import chi2
 from matplotlib.patches import Ellipse as el
 
-from IPython.display import clear_output
 import ipywidgets as widgets
 import warnings
 warnings.filterwarnings('ignore')
@@ -171,58 +170,6 @@ def construct_sklearn_dataset(dataset):
 
     return data
 
-# import math
-# def normpdf(x, mean, sd):
-#     var = float(sd)**2
-#     denom = (2*math.pi*var)**.5
-#     num = math.exp(-(float(x)-float(mean))**2/(2*var))
-#     return num/denom
-#
-#
-# def gamma_factor(mu1, mu2, dev1, dev2):
-#     r = mu1 - mu2
-#
-#     mod_r = np.sum(np.abs(r))
-#     rhat = r / mod_r
-#
-#
-#     from1 = np.abs(np.dot(rhat, dev1))
-#     from2 = np.abs(np.dot(rhat, dev2))
-#     bottom = from1+from2
-#
-#
-#
-#     r = mu1 - mu2
-#     r_hat = r / np.sum(np.abs(r))
-#
-#     dev1_norm = dev1 / np.sum(dev1)
-#     dev2_norm = dev2 / np.sum(dev2)
-#
-#     r_signs = np.sign(r)
-#
-#     match_below = np.dot(r_signs*r_hat, dev1+dev2)
-#     # match_above = np.abs(np.dot(r_signs*r_hat, dev2))
-#
-#     length_r = norm(r)
-#
-#     return length_r / (match_below)
-#
-#
-#
-#
-#
-#     # return mod_r / bottom
-
-
-
-
-
-
-
-
-
-
-
 
 def distances(mu1, mu2):
     """Simple function, returns the euclidean
@@ -231,6 +178,8 @@ def distances(mu1, mu2):
     return norm(r)
 
 def to_categorical(data):
+    """Again simple, takes a pandas series or numpy array as input
+    and returns it as an integer for each category"""
     from sklearn.preprocessing import LabelEncoder
 
     enc = LabelEncoder().fit_transform(data)
@@ -257,7 +206,10 @@ class analyser:
         #Define the core class attributes
         self.data = data
         self.label_col = label_col
+
+        #Initialise all the data pre-processing
         self.init_data()
+
 
         if regression:
             self.problem = 'regression'
@@ -270,6 +222,10 @@ class analyser:
         self.analyse()
 
     def init_data(self):
+        """Sets up all the data arrays and dataframes,
+        including normalisation"""
+
+        #List of all column names
         self.column_names = self.data.columns.to_list()
         self.target = self.label_col
         datacols = self.column_names.copy()
@@ -277,34 +233,43 @@ class analyser:
         if "KMeans clusters" in datacols:
             datacols.remove("KMeans clusters")
 
-
+        #Other methods might want to use this, so make it a class attribute
         self.datacols = datacols
 
+        #Array of the target attribute
         self.Y = self.data[self.label_col].to_numpy()  #Array of class labels
 
+        #Dataframe of only non-target attributes
         self.X_df = self.data[datacols]  # Dataframe only of features
 
+        #Keep count of categorical and numeric features
         self.n_categorical = 0
         self.n_numeric     = 0
         for col in datacols:
+            #For each column, check if its categorical. If it is, use to_categorical to shift to integers
             if np.unique(self.data[col]).shape[0] < 10:
                 self.X_df[col] = to_categorical(self.X_df[col])
                 self.n_categorical += 1
             else:
                 self.n_numeric += 1
 
+        #Numpy array of non-target data
         self.X = self.X_df.to_numpy()
 
-        # #print(self.data.head())
         if self.normalise:
+            #Normalise the data array to unit mean and variance
             from sklearn.preprocessing import StandardScaler
             self.scaler = StandardScaler()
             self.X = self.scaler.fit_transform(self.X)
 
 
-
+    #Ignore other_arg, this is just to deal with ipywidgets...
     def analyse(self, other_arg = None):
-        clear_output()
+        """This does the heavy lifting when DataharPY is used as an analysis tool in jupyter
+        Initiates all the widgets
+
+        Lines 273-491 are literally just describing widgets"""
+
         x1_drop = widgets.Dropdown(
             value=self.datacols[0],
             options=self.datacols,
@@ -319,10 +284,10 @@ class analyser:
 
         color_drop = widgets.Dropdown(
             value=self.label_col,
-            options=self.column_names,# + [self.label_col, "KMeans clusters"],
+            options=self.column_names,
             description='Color'
         )
-
+        #List of calculations for dropdown in calculations tab
         calculations = [('Mean', np.mean), ('Deviation', np.std), ('Max', np.max), ('Min', np.min), ('Range', np.ptp),
                          ('Feature Correlations', self.feature_correlations),('Feature Mean Separations', self.mean_separations)]
         if self.problem != 'classification':
@@ -338,7 +303,7 @@ class analyser:
         )
 
 
-
+        #Kernels to test linear separability
         kernels = ['linear', 'poly', 'rbf', 'sigmoid']
         order = widgets.BoundedIntText(
             value=1,
@@ -352,120 +317,126 @@ class analyser:
             options = kernels,
             description = 'Kernel'
         )
-
+        #Dimensionality reduction with PCA and TSNE
         pca_btn = widgets.Button(
             description='Add PCA',
             disabled=False,
-            button_style='success',  # 'success', 'info', 'warning', 'danger' or ''
+            button_style='success',
             tooltip='Add PCA',
-            icon=''  # (FontAwesome names without the `fa-` prefix)
+            icon=''
         )
         pca_btn.on_click(self.add_PCA)
 
         rm_pca_btn = widgets.Button(
             description='Remove PCA',
             disabled=False,
-            button_style='warning',  # 'success', 'info', 'warning', 'danger' or ''
+            button_style='warning',
             tooltip='Remove PCA',
-            icon=''  # (FontAwesome names without the `fa-` prefix)
+            icon=''
         )
         rm_pca_btn.on_click(self.remove_PCA)
 
         tsne_btn = widgets.Button(
             description='Add TSNE',
             disabled=False,
-            button_style='success',  # 'success', 'info', 'warning', 'danger' or ''
+            button_style='success',
             tooltip='Add TSNE',
-            icon=''  # (FontAwesome names without the `fa-` prefix)
+            icon=''
         )
         tsne_btn.on_click(self.add_TSNE)
 
         rm_tsne_btn = widgets.Button(
             description='Remove TSNE',
             disabled=False,
-            button_style='warning',  # 'success', 'info', 'warning', 'danger' or ''
+            button_style='warning',
             tooltip='Remove TSNE',
-            icon=''  # (FontAwesome names without the `fa-` prefix)
+            icon=''
         )
         rm_tsne_btn.on_click(self.remove_TSNE)
-
+        #KMeans clustering buttons
         add_clusters = widgets.Button(
             description='Find clusters',
             disabled=False,
-            button_style='success',  # 'success', 'info', 'warning', 'danger' or ''
+            button_style='success',
             tooltip='Find clusters',
-            icon=''  # (FontAwesome names without the `fa-` prefix)
+            icon=''
         )
         add_clusters.on_click(self.find_clusters)
 
         rm_clusters = widgets.Button(
             description='Remove clusters',
             disabled=False,
-            button_style='warning',  # 'success', 'info', 'warning', 'danger' or ''
+            button_style='warning',
             tooltip='Remove clusters',
-            icon=''  # (FontAwesome names without the `fa-` prefix)
+            icon=''
         )
         rm_clusters.on_click(self.remove_clusters)
 
-
+        #This lets users actually play with KMeans clusters, as well as dimensionality reductions
         reset_btn = widgets.Button(
             description='Compare new',
             disabled=False,
-            button_style='info',  # 'success', 'info', 'warning', 'danger' or ''
-            #tooltip='Reset the analysis process - allows comparison of dimensionality reduction features',
-            icon=''  # (FontAwesome names without the `fa-` prefix)
+            button_style='info',
+            icon=''
         )
         reset_btn.on_click(self.analyse)
 
-        dimensionality_buttons = [pca_btn, rm_pca_btn,  tsne_btn, rm_tsne_btn, reset_btn]
 
+        rec_btn = widgets.Button(
+            description='Re-run recommendation',
+            disabled=False,
+            button_style='success',
+            icon=''
+        )
+        rec_btn.on_click(self.recommend)
+
+
+        #List containing the dimensionality buttons
+        dimensionality_buttons = [pca_btn, rm_pca_btn,  tsne_btn, rm_tsne_btn, reset_btn]
+        #Interactive output allows normal python outputs, but into an ipywidget. order and kernel are the function linear_separable's keyword arguments
         sep_check = widgets.interactive_output(self.linear_separable,{'order':order, 'kernel':kernel})
-        cluster = widgets.interactive_output(self.find_clusters,{})
 
         functions = widgets.VBox(children = [ widgets.HBox(children = dimensionality_buttons),
                                                  widgets.HBox(children = [sep_check,widgets.VBox(children =  [order, kernel])]),
                                               widgets.HBox(children=[add_clusters, rm_clusters])])
 
-
+        #Comparison, calculations, recommendations and feature importances also requires interactive output
         compare = widgets.VBox(children = [widgets.interactive_output(self.compare, {'x1':x1_drop, 'x2':x2_drop, 'color_attrib':color_drop}),
                                         widgets.HBox(children = [x1_drop, x2_drop, color_drop])])
 
         importances = widgets.VBox(children=[widgets.interactive_output(self.feature_importances,{'color_attrib':color_drop}), color_drop])
         calcs = widgets.VBox(children = [widgets.interactive_output(self.dist, {'calculation':dist_drop}), dist_drop])
 
-        rec_btn = widgets.Button(
-            description='Re-run recommendation',
-            disabled=False,
-            button_style='success',  # 'success', 'info', 'warning', 'danger' or ''
-            #tooltip='Reset the analysis process - allows comparison of dimensionality reduction features',
-            icon=''  # (FontAwesome names without the `fa-` prefix)
-        )
-        rec_btn.on_click(self.recommend)
 
         recommendations = widgets.HBox(children = [widgets.interactive_output(self.recommend, {}), rec_btn])
-
+        #List of the tabs we've spent the last hundred lines putting together
         kids = [compare, importances, calcs, functions, recommendations]
-
+        #Initiate tabs, give names
         tab = widgets.Tab(children=kids)
         tab.set_title(0, 'Compare Features')
         tab.set_title(1, 'Best Features')
         tab.set_title(2, 'Calculations')
         tab.set_title(3, 'Functions')
         tab.set_title(4, 'Recommendations')
-
+        #Oddly the kmeans function seems to fire before it should. This is just in case it does.
         self.remove_clusters()
-
+        #We finally got here!
         display(tab)
 
 
     def recommend(self, dummy = None):
+        """Gives the user a recommendation of what ML model to use
+        Currently only built for categorisation problems"""
+
+        #Get feature correlations, and calculate the average of the (normalised) by-feature correlations
         corr = self.feature_correlations(display=False)
         sum_corr = np.sum(np.abs(corr.to_numpy())) - corr.shape[0]
         mean_corr = sum_corr / (corr.shape[0]**2 - corr.shape[0])
-
+        #We add to these strings as the data is explored
         recommendation = 'Recommendation:'
         reasons = '\nReasons:\n'
-
+        # The reasons and recommendations here should make this self-explanatory.
+        # I'll document where there might be confusion
         if self.n_categorical != 0:
             reasons += f'Your data has {self.n_categorical} categorical columns\n'
             if self.n_numeric == 0:
