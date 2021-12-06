@@ -11,7 +11,7 @@ Usage
 Options
 -------
 
-<Some description of the different options the nbextension provides, what they do, and their default values>
+none
 
 Internals
 ---------
