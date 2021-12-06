@@ -11,13 +11,10 @@ Usage
 Options
 -------
 
-<Some description of the different options the nbextension provides, what they do, and their default values>
+none
 
 Internals
 ---------
 
 Some more description
 
-Credits
--------------
-- Icon Source from https://iconscout.com/icons/harpies
