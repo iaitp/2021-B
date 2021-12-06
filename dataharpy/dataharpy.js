@@ -63,6 +63,13 @@ Jupyter
                 "\t\tprint(e)\n" +
                 "\t\tdisplay(data_dropdown)\n" +
                 "\t\tdisplay(select_data_btn)\n" +
+                "\texcept Exception as e:\n" +
+                "\t\tclear_output()\n" +
+                "\t\tprint('Error: Are you sure you selected a compatible DataFrame? Please reselect a suitible DataFrame:')\n" +
+                "\t\tprint()\n" +
+                "\t\tprint(e)\n" +
+                "\t\tdisplay(data_dropdown)\n" +
+                "\t\tdisplay(select_data_btn)\n" +
                 "analyser_btn.on_click(analyser_btn_eventhandler)\n" +
                 "select_data_btn.on_click(select_data_btn_eventhandler)\n" +
                 //ensuring the analyser and drop down are visible when the

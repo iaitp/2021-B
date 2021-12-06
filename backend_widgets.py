@@ -11,6 +11,7 @@ import pandas as pd
 from scipy.stats import chi2
 from matplotlib.patches import Ellipse as el
 
+from IPython.display import clear_output
 import ipywidgets as widgets
 import warnings
 warnings.filterwarnings('ignore')
@@ -269,6 +270,9 @@ class analyser:
         Initiates all the widgets
 
         Lines 273-491 are literally just describing widgets"""
+
+        # Clears output of the cell.
+        clear_output()
 
         x1_drop = widgets.Dropdown(
             value=self.datacols[0],
