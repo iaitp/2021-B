@@ -423,7 +423,7 @@ class analyser:
         tab.set_title(3, 'Functions')
         tab.set_title(4, 'Recommendations')
         #Oddly the kmeans function seems to fire before it should. This is just in case it does.
-        self.remove_clusters()
+        #self.remove_clusters()
         #We finally got here!
         display(tab)
 
