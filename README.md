@@ -33,8 +33,10 @@ Just run the build.sh script using bash:
 `bash build.sh`
 
 you might need to modify the file to make it executable or run with sudo:
+
 `
 chmod u+x build.sh
+
 sudo bash build.sh
 `
 
