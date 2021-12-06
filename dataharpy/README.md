@@ -18,6 +18,3 @@ Internals
 
 Some more description
 
-Credits
--------------
-- Icon Source from https://iconscout.com/icons/harpies
