@@ -26,6 +26,20 @@ A Jupyter extension that analyses your data and shows you less computational exp
 ## Development Environment Setup
 We're using a conda environment for the development of this extension. This makes it ease for all devs to have the same setup.
 
+### Quick setup
+
+Just run the build.sh script using bash:
+
+`bash build.sh`
+
+you might need to modify the file to make it executable or run with sudo:
+`
+chmod u+x build.sh
+sudo bash build.sh
+`
+
+### Manual setup
+
 **Create Conda Environment**
 - install conda (miniconda is probably enough)
 - in the project dir run `conda env create -f environment.yml`
