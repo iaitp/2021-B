@@ -14,8 +14,3 @@ Options
 
 none
 
-Internals
----------
-
-Some more description
-
