@@ -6,7 +6,8 @@ A Jupyter extension that analyses your data and shows you less computational exp
 Usage
 -----
 
-<A more detailed description can go here, maybe covering different variations of functionality, differences in versions or for different kernels etc.>
+Click on the Data HarPy button in the toolbar. This will insert a new cell in which you can select the data frame you'd like to analyse.
+
 
 Options
 -------
