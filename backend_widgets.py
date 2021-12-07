@@ -485,20 +485,10 @@ class analyser:
 
         print(recommendation, '\n',reasons)
 
-
-
-
-
-
-
-
     def compare_update(self, x1, x2):
         fig = self.compare(x1, x2)
 
         return fig
-
-
-
 
     """Function calculates the given metric,
     ideally a numpy function, on an overall or by-class basis"""
@@ -509,8 +499,6 @@ class analyser:
         if classes == False:
 
             class_labels = [self.label_col]
-
-
 
             if calculation == self.mean_separations:
                 return self.mean_separations()
