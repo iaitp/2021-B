@@ -86,8 +86,6 @@ The second tab uses the same `.compare(x1,x2)` method, and finds the most useful
 
 Other tabs display useful per-class and per-feature information.
 
-## Credits
-<TODO>
 
 --------------------
 ## Invoke
