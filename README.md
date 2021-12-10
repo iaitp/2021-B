@@ -1,72 +1,106 @@
 # Data HarPy Interactive AI CDT Team project
 
 ---
-## Group Members
+### Group Members
 
-| [Alex Davies](https://github.com/neutralpronoun) | [Isabella Degen](https://github.com/isabelladegen) | [Phillip Sloan](https://github.com/phillipSloan) | [Tony Fang](https://github.com/) | 
-| - | - | - | - |
+| [Alex Davies](https://github.com/neutralpronoun) | [Isabella Degen](https://github.com/isabelladegen) | [Phillip Sloan](https://github.com/phillipSloan) | Tony Fang | 
 
----
+### Contents
+ 1. [Overview](#overview)
+ 2. [Setup](#setup)
+ 3. [Integration](#integration)
+ 4. [Frontend](#frontend)
+ 5. [Backend](#backend)
+ 6. [Future Work](#futurework)
 
-### 1. [Introduction](#introduction)
-### 2. [Background](Report/Background/README.md)
-### 3. [System Implementation](Report/System_Implementation/README.md)
-### 4. [Evaluation](Report/Evaluation/README.md)
-### 5. [Conclusion](Report/Conclusion/README.md)
+# <a name="overview">Overview #
 
-# Introduction
+### Motivation
+Data HarPy is a Jupyter notebook extension that analyses and visualises data and recommends less computational expensive models to 
+pick for your task. At the moment Data HarPy works for classification tasks.
 
-A Jupyter extension that analyses your data and shows you less computational expensive models to pick for your task. See [link](dataharpy/README.md)
+### Description
+Data HarPy extends the Jupyter notebook toolbar with an additional button. On click of the button an ipywidgets
+cell is inserted into the notebook. The pandas dataframe to be analysed can be selected via the dropdown in the cell. 
+The data analysis part of the extension is written in pure python and can therefore also be used by itself without
+the need to install the  Jupyter notebook extension itself.
 
-## Tooling
-- Jupyter 6.* with extensions: this is basically our frontend
+### Project Overview
+At the beginning of the project we brainstormed different ideas in the area of sustainable AI. We wanted
+to work on something that allowed us to learn more about AI and sustainability. We felt that the understanding 
+of the shape of data was a key part to help decide what ML algorithm could be fit to classify the data.
+Data HarPy is the beginning of such a data analysis and ML algorithm selection tool. It also helps
+with feature analysis.
+
+We split the work for Data HarPy into three major parts: 
+- Jupyter notebook integration and development environment setup
+- ipywidget frontend
+- data analysis 'backend'
+
+The different parts of Data HarPy allowed us to work on all of them in parallel. We were meeting
+weekly to discuss what we've done and decide what to work on next. We also during the week paired on
+some of the tasks to be done.
+
+We followed 'trunk-based development' without feature branches and pull request. Instead we each merge our work into the
+main branch frequently, whenever we had a bit of working new functionality on our local machine. 
+This meant that we'd commit to our local branch, do 
+a `git pull --rebase`, resolve the potential merge conflicts on our machine before pushing back 
+to the remote main branch. Further reading on different source control workflows
+[here](https://martinfowler.com/articles/branching-patterns.html).
+
+We used a conda environment to keep the Python environments across our computers consistent.
+
+### Tooling
+- Jupyter 6.*  and ipywidgets: Frontend
 - Conda: Python environment mgr
 - Invoke: Python build tool to simplify frequently used tasks
 
-## Development Environment Setup
-We're using a conda environment for the development of this extension. This makes it ease for all devs to have the same setup.
 
-### Quick setup
+# <a name="setup">Setup #
 
-Just run the build.sh script using bash:
+If you want use Data HarPy you can follow the [Quick Setup](#quicksetup).
+For development on Data HarPy follow [Developer Setup](#devsetup).
 
-`bash build.sh`
+At the moment both assume that you are using [conda](https://docs.conda.io/en/latest/) to manage your python environment.
 
-you might need to modify the file to make it executable or run with sudo:
+## <a name="quicksetup"></a>Quick Setup
+- clone this git repo
+- run `./build.sh` in the root of the repository
+
+This will setup and activate a new conda environment and start the Jupyter notebook for you.
+
+You might need to modify the file to make it executable or run with sudo:
+- `chmod u+x build.sh`
+- `sudo bash build.sh`
+
+## <a name="devsetup"></a>Developer Setup
+- Clone this git repo
+- In the project root run `conda env create -f environment.yml`
+- Activate env `conda activate 2021-B`
+- Install Data HarPy `inv uninstall-dataharpy`
+- Run Jupyter `jupyter notebook`
+
+### Keep Conda Environment up to date
+If you need a new Python package you need to add the package to the `environement.yml` file. Then
+you can run (in your active conda env)  `conda env update -n 2021-B --file environment.yml  --prune`
+
+*It's a good idea to this everytime you pull changes from main as somebody else might have changed the environment*
 
 
-`chmod u+x build.sh`
+### Changing the Data HarPy extension
 
-`sudo bash build.sh`
+If you make changes to the Javascript code of the extension you need to reinstall it. To do so
+run:
+- `inv uninstall-dataharpy`
+- `inv install-dataharpy`
 
+*It's a good idea to this everytime you pull changes from main as somebody else might have changed the extension*
 
-### Manual setup
+# <a name="integration">Integration #
 
-**Create Conda Environment**
-- install conda (miniconda is probably enough)
-- in the project dir run `conda env create -f environment.yml`
+# <a name="frontend">Frontend #
 
-**Activate Conda Environment**
-- `conda activate 2021-B`
-*Make sure you also use this env in your IDE*
-
-**Change and/or Update Conda Environment**
-1. Add any new package you need to the environment.yml file
-2. Update the conda environment by running `conda env update -n 2021-B --file environment.yml  --prune`
-
-*It's a good idea to this everytime after you pulled as somebody might have changed the environment*
-
-## Install and Update the Extension
-
-_You can skip the first step if you've never installed the extension before_
-_These commands need to be run with the project's conda env active and in the root folder of the project_
-1. `inv uninstall-dataharpy`
-2. `inv install-dataharpy`
-
-## Run Jupyter
-Jupyter is already part of the environment. To start it run 
-- `conda activate 2021-B`
-- `jupyter notebook`
+# <a name="backend">Backend #
 
 ## Using the plugin
 Once you're in a notebook, prepare a pandas dataframe.
@@ -86,6 +120,22 @@ The second tab uses the same `.compare(x1,x2)` method, and finds the most useful
 
 Other tabs display useful per-class and per-feature information.
 
+
+--------------------
+# # <a name="futurework">Future Work #
+Work that needs doing
+
+### Environment
+- Installation via Conda Forge and PiPY
+- Extension for Jupyter Lab
+
+### Frontend
+- User Testing and adaption of user interface based on these outcomes
+- Easier controls directly in the toolbar instead of a cell
+
+### Backend
+- User testing of current functionality and extension  based on that
+- Extension for tasks beyond classification
 
 --------------------
 ## Invoke
