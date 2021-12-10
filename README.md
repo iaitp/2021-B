@@ -9,9 +9,8 @@
  1. [Overview](#overview)
  2. [Setup](#setup)
  3. [Integration](#integration)
- 4. [Frontend](#frontend)
- 5. [Backend](#backend)
- 6. [Future Work](#futurework)
+ 4. [Frontend and Backend ](#frontendandbackend)
+ 5. [Future Work](#futurework)
 
 # <a name="overview">Overview #
 
@@ -133,34 +132,44 @@ Useful links:
 - [Existing Extensions](https://github.com/ipython-contrib/jupyter_contrib_nbextensions/) *This is also the repository we'd need to push to in order to make our extension part of the existing nbextensions*
 - [Blog post on: Ways of extending the Jupyter Notebook](https://mindtrove.info/4-ways-to-extend-jupyter-notebook/) *This is a tad out of date but still useful*
 
-# <a name="frontend">Frontend #
+# <a name="frontendandbackend">Frontend and Backend#
 
+IPython Widgets are used as user interface and to visualise the data analysis. 
+The cell that gets inserted to the notebook has
+a dropdown that allows the user to select any panda's dataframe in their notebook:
 
+![Data HarPy Select dataframe](https://github.com/iaitp/2021-B/blob/main/img/selectdataframe.jpg?raw=true)
 
+*In this version feature columns can have any name, but the target feature ("Y") needs to be named "target".*
 
-# <a name="backend">Backend #
+Pressing analyse will generate an analysis interface with some useful tabs of information about your data as
+well as a recommendation tab on what simple algorithm could be used to separate your features for classification.
 
-## Using the plugin
-Once you're in a notebook, prepare a pandas dataframe.
+![Data HarPy Analysis Interface](https://github.com/iaitp/2021-B/blob/main/img/analysisinterface.jpg?raw=true)
 
-In this version feature columns can be any name, but your target feature ("Y") should be named "target".
+Note that the data is normalised by default when `.analyse(x1,x2)` is called. 
+Calculated values (e.g. per-class mean separation) are therefore calculated using the normalised data.
 
-Once you have a dataframe, click the plugin's button on the Jupyter toolbar (a bar chart icon), and you'll be prompted to select a dataframe to use.
-Select a dataframe and press analyse, and dataharpy will generate some useful tabs with information about your data.
+The **Compare Features** tab plots features against each other, along with histograms aligned with the scatter plot. 
+If the same feature is selected twice then the output is a per-class violin plot.
 
-Note: Data is normalised by default when `.analyse(x1,x2)` is called. Calculated values (e.g. per-class mean separation) are therefore calculated using the normalised data.
+The **Best Features** tab uses the same `.compare(x1,x2)` method, and finds the most useful features in the data,
+using an sklearn random forest.
 
-## Output information
+The **Calculations** and **Functions** tabs display useful per-class and per-feature information.
 
-The first tab allows you to plot features against each other, along with histograms aligned with the scatter plot. If the same feature is selected twice then the output is a per-class violin plot.
+The **Recommendations** tab shows a what algorithm could be used to separate the selected features. It 
+uses the following model to come up with a recommendation:
 
-The second tab uses the same `.compare(x1,x2)` method, and finds the most useful features in the context of your data, using an sklearn random forest.
+![Data HarPy Recommendations](https://github.com/iaitp/2021-B/blob/main/img/recommendations.png?raw=true)
 
-Other tabs display useful per-class and per-feature information.
+*Note that the python scripts are also well documented for users who want to directly call the python functiosn
+instead of using the extension.
 
-
-# # <a name="futurework">Future Work #
-Work that needs doing
+# <a name="futurework">Future Work #
+There's loads of ways to improve Data HarPy. One key activity is to do user testing beyond ensuring 
+that the installation works on various different computers. Like we've done. The user testing would guide us
+which of the following work is most important
 
 ### Integration
 - Installation via Conda Forge and PiPY
@@ -168,11 +177,11 @@ Work that needs doing
 - Extension for Jupyter Lab
 
 ### Frontend
-- User Testing and adaption of user interface based on these outcomes
-- Easier controls directly in the toolbar instead of a cell
+- Simplifying the controls
+- Add the dataframe selection dropdown to toolbar instead of into a cell
+- Visualisation on how the algorithm recommendation has been done
 
 ### Backend
-- User testing of current functionality and extension  based on that
 - Extension for tasks beyond classification
 
 
