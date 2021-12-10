@@ -1,6 +1,5 @@
-# Data HarPy Interactive AI CDT Team project
+# Data HarPy Interactive AI CDT Team project #
 
----
 ### Group Members
 
 | [Alex Davies](https://github.com/neutralpronoun) | [Isabella Degen](https://github.com/isabelladegen) | [Phillip Sloan](https://github.com/phillipSloan) | Tony Fang | 
