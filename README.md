@@ -132,7 +132,7 @@ Useful links:
 - [Existing Extensions](https://github.com/ipython-contrib/jupyter_contrib_nbextensions/) *This is also the repository we'd need to push to in order to make our extension part of the existing nbextensions*
 - [Blog post on: Ways of extending the Jupyter Notebook](https://mindtrove.info/4-ways-to-extend-jupyter-notebook/) *This is a tad out of date but still useful*
 
-# <a name="frontendandbackend">Frontend and Backend#
+# <a name="frontendandbackend">Frontend and Backend #
 
 IPython Widgets are used as user interface and to visualise the data analysis. 
 The cell that gets inserted to the notebook has
