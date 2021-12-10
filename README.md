@@ -25,7 +25,7 @@ cell is inserted into the notebook. The pandas dataframe to be analysed can be s
 The data analysis part of the extension is written in pure python and can therefore also be used by itself without
 the need to install the  Jupyter notebook extension itself.
 
-### Project Overview
+### Project Management Overview
 At the beginning of the project we brainstormed different ideas in the area of sustainable AI. We wanted
 to work on something that allowed us to learn more about AI and sustainability. We felt that the understanding 
 of the shape of data was a key part to help decide what ML algorithm could be fit to classify the data.
@@ -37,46 +37,47 @@ We split the work for Data HarPy into three major parts:
 - ipywidget frontend
 - data analysis 'backend'
 
-The different parts of Data HarPy allowed us to work on all of them in parallel. We were meeting
-weekly to discuss what we've done and decide what to work on next. We also during the week paired on
-some of the tasks to be done.
+The different parts of Data HarPy allowed us to work on all of them in parallel. We used a Trello board to keep track 
+of ideas and tasks and we were meeting weekly to discuss what we've done and decide what to work on next. 
+During the week we also paired on some of the tasks.
 
-We followed 'trunk-based development' without feature branches and pull request. Instead we each merge our work into the
-main branch frequently, whenever we had a bit of working new functionality on our local machine. 
+We followed 'trunk-based development' without feature branches and pull request. Instead, we each merged our work into the
+main branch whenever we had a bit of working new functionality on our local machine. 
 This meant that we'd commit to our local branch, do 
 a `git pull --rebase`, resolve the potential merge conflicts on our machine before pushing back 
-to the remote main branch. Further reading on different source control workflows
-[here](https://martinfowler.com/articles/branching-patterns.html).
+to the remote main branch. Further reading on different source control workflows:
+[Martin Fowler Source Control Workflows](https://martinfowler.com/articles/branching-patterns.html).
 
 We used a conda environment to keep the Python environments across our computers consistent.
 
 ### Repository Structure 
 ```bash.
-├── Extension\ Test.ipynb
+├── Extension\ Test.ipynb -> Notebook to test the extension with
 ├── LICENSE
-├── Notebook_example.ipynb
+├── Notebook_example.ipynb -> Notebook that directly calls the backend
 ├── README.md
-├── backend_widgets.py
-├── build.sh
-├── dataharpy
+├── build.sh -> quick setup
+├── dataharpy -> Jupyter extension
 │   ├── README.md
 │   ├── dataharpy.js
 │   └── dataharpy.yaml
-├── environment.yml
-├── functions_backend.py
-└── tasks.py
+├── environment.yml -> Conda environment file
+├── backend_widgets.py -> backend
+├── functions_backend.py -> backend
+└── tasks.py -> Invoke file to install and uninstall the extention
 ```
 
 ### Tooling
 - Jupyter 6.*  and ipywidgets: Frontend
 - Conda: Python environment mgr
+- Python 3.9.7: Backend
 - [Invoke](https://docs.pyinvoke.org/en/stable/index.html): Python build tool to simplify frequently used tasks
 
 
 # <a name="setup">Setup #
 
-If you want use Data HarPy you can follow the [Quick Setup](#quicksetup).
-For development on Data HarPy follow [Developer Setup](#devsetup).
+If you want to use Data HarPy you can follow the [Quick Setup](#quicksetup).
+For manual install and more details on development on Data HarPy follow [Developer Setup](#devsetup).
 
 At the moment both assume that you are using [conda](https://docs.conda.io/en/latest/) to manage your python environment.
 
@@ -103,7 +104,6 @@ you can run (in your active conda env)  `conda env update -n 2021-B --file envir
 
 *It's a good idea to this everytime you pull changes from main as somebody else might have changed the environment*
 
-
 ### Changing the Data HarPy extension
 
 If you make changes to the Javascript code of the extension you need to reinstall it. To do so
@@ -113,9 +113,30 @@ run:
 
 *It's a good idea to this everytime you pull changes from main as somebody else might have changed the extension*
 
+### Extending the build file
+Any useful command for developers can be added to the `tasks.py` file to make things simpler for 
+other to run.
+
+To show what tasks are available run: `invoke --list` or `inv --list`
+
 # <a name="integration">Integration #
 
+Currently, Data HarPy integrates with Jupyter notebooks and adds a new button to the toolbar:
+
+![Data HarPy Toolbar Extension](https://github.com/iaitp/2021-B/blob/main/img/jupyterextension.png?raw=true)
+
+All the code for the extension lives in the dataharpy subfolder of the repository. To figure out how to
+extend the notebook we looked at the documentation and existing extensions.
+
+Useful links:
+- [Extending Jupyter Notebook](https://jupyter-notebook.readthedocs.io/en/stable/extending/index.html)
+- [Existing Extensions](https://github.com/ipython-contrib/jupyter_contrib_nbextensions/) *This is also the repository we'd need to push to in order to make our extension part of the existing nbextensions*
+- [Blog post on: Ways of extending the Jupyter Notebook](https://mindtrove.info/4-ways-to-extend-jupyter-notebook/) *This is a tad out of date but still useful*
+
 # <a name="frontend">Frontend #
+
+
+
 
 # <a name="backend">Backend #
 
@@ -138,12 +159,12 @@ The second tab uses the same `.compare(x1,x2)` method, and finds the most useful
 Other tabs display useful per-class and per-feature information.
 
 
---------------------
 # # <a name="futurework">Future Work #
 Work that needs doing
 
-### Environment
+### Integration
 - Installation via Conda Forge and PiPY
+- Add extension to the existing nbextensions which would allow installation via Jupyter extension manager
 - Extension for Jupyter Lab
 
 ### Frontend
@@ -154,11 +175,5 @@ Work that needs doing
 - User testing of current functionality and extension  based on that
 - Extension for tasks beyond classification
 
---------------------
-## Invoke
 
-_We can add any build tasks to the tasks.py file to make things simple for others to run_
- - Documentation: https://docs.pyinvoke.org/en/stable/index.html
- - Show available tasks: `invoke --list` or `inv --list`
- 
 
