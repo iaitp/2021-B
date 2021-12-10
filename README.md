@@ -8,7 +8,7 @@
 ### Contents
  1. [Overview](#overview)
  2. [Setup](#setup)
- 3. [Integration](#integration)
+ 3. [Jupyter Integration](#integration)
  4. [Frontend and Backend ](#frontendandbackend)
  5. [Future Work](#futurework)
 
@@ -34,11 +34,11 @@ with feature analysis.
 We split the work for Data HarPy into three major parts: 
 - Jupyter notebook integration and development environment setup
 - ipywidget frontend
-- data analysis 'backend'
+- data analysis backend
 
 The different parts of Data HarPy allowed us to work on all of them in parallel. We used a Trello board to keep track 
-of ideas and tasks and we were meeting weekly to discuss what we've done and decide what to work on next. 
-During the week we also paired on some of the tasks.
+of ideas and tasks, and we were meeting weekly to discuss what we've done and decide what to work on next. 
+During the week we also paired on some tasks.
 
 We followed 'trunk-based development' without feature branches and pull request. Instead, we each merged our work into the
 main branch whenever we had a bit of working new functionality on our local machine. 
@@ -118,7 +118,7 @@ other to run.
 
 To show what tasks are available run: `invoke --list` or `inv --list`
 
-# <a name="integration">Integration #
+# <a name="integration">Jupyter Integration #
 
 Currently, Data HarPy integrates with Jupyter notebooks and adds a new button to the toolbar:
 
@@ -171,7 +171,7 @@ There's loads of ways to improve Data HarPy. One key activity is to do user test
 that the installation works on various different computers. Like we've done. The user testing would guide us
 which of the following work is most important
 
-### Integration
+### Integrations and Installation
 - Installation via Conda Forge and PiPY
 - Add extension to the existing nbextensions which would allow installation via Jupyter extension manager
 - Extension for Jupyter Lab
