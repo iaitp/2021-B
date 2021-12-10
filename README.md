@@ -50,10 +50,27 @@ to the remote main branch. Further reading on different source control workflows
 
 We used a conda environment to keep the Python environments across our computers consistent.
 
+### Repository Structure 
+```bash.
+├── Extension\ Test.ipynb
+├── LICENSE
+├── Notebook_example.ipynb
+├── README.md
+├── backend_widgets.py
+├── build.sh
+├── dataharpy
+│   ├── README.md
+│   ├── dataharpy.js
+│   └── dataharpy.yaml
+├── environment.yml
+├── functions_backend.py
+└── tasks.py
+```
+
 ### Tooling
 - Jupyter 6.*  and ipywidgets: Frontend
 - Conda: Python environment mgr
-- Invoke: Python build tool to simplify frequently used tasks
+- [Invoke](https://docs.pyinvoke.org/en/stable/index.html): Python build tool to simplify frequently used tasks
 
 
 # <a name="setup">Setup #
